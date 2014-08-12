@@ -3,3 +3,6 @@
 make distclean
 tools/autounfuck
 git commit
+tools/push
+tools/autogen
+./configure
