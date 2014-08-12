@@ -1,3 +1,5 @@
 #!/usr/bin/env sh
 
+make distclean
+tools/autounfuck
 git commit
