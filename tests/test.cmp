@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grid>
+  <size width="3" height="3"/>
+  <rows>
+    <row>
+      <columns>
+        <cell>r1,c1</cell>
+        <cell>r1,c2</cell>
+        <cell>r1,c3</cell>
+      </columns>
+    </row>
+    <row>
+      <columns>
+        <cell>r2,c1</cell>
+        <cell>r2,c2</cell>
+        <cell>r2,c3</cell>
+      </columns>
+    </row>
+    <row>
+      <columns>
+        <cell>r3,c1</cell>
+        <cell>r3,c2</cell>
+        <cell>r3,c3</cell>
+      </columns>
+    </row>
+  </rows>
+</grid>

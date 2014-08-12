@@ -1,0 +1,2087 @@
+\input texinfo
+@c -*-texinfo-*-
+@c %**start of header
+@setfilename egg.info
+@include version.texi
+@smallbook
+@settitle @acronym{EGG} User Guide (@value{VERSION})
+@paragraphindent none
+@c %**end of header
+
+
+@copying
+This manual is the User Guide for @acronym{EGG} (version @value{VERSION}).
+
+Copyright @copyright{} 2013 Patrick Head.
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
+Texts. A copy of the license is included in the section entitled
+``GNU Free Documentation License''.
+@end quotation
+@end copying
+
+@titlepage
+@title @acronym{EGG} User Guide (ver. @value{VERSION})
+
+@c The following two commands start the copyright page.
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@headings off
+
+@c table-of-contents BEGIN
+@contents
+@c table-of-contents END
+
+@c Menu required for info/HTML and other formats
+@ifnottex
+@node Top,Introduction,(dir),(dir)
+@top @acronym{EGG} User Guide (@value{VERSION})
+@acronym{EGG} User Guide (@value{VERSION})
+@end ifnottex
+@menu
+* Introduction::     Introduction to @acronym{EGG}
+* @acronym{EGG} Explained::    History and detailed explanation of @acronym{EGG} grammars
+* embryo::           embryo command details
+* embryo Output Explained::  Source code generation explained
+* egg-walker::       egg-walker command details
+* egg-walker Output Explained::  Token tree explained
+* egg-mapper::       egg-mapper command details
+* egg-mapper Output Explained::  Grammar reference map explained
+* Tutorial - Creating a parser from an @acronym{EGG}::  Step-by-step tutorial for @acronym{EGG} usage.
+* Terms::            Some @acronym{EGG} terminology defined
+* Bibliography::     References
+* Index::            Complete index
+@end menu
+
+@iftex
+@c preface BEGIN
+@node Preface
+@page
+@chapheading Preface
+This document is prepared in order to serve as the official usage document for
+the @acronym{EGG} parser generation tool set.   The @acronym{EGG} tool set was developed to provide a
+clear path from a grammar definition in a @acronym{BNF} style language to a complete source code that can be used as the grammar parsing engine for most any project requiring as much.
+@sp 1
+The author of @acronym{EGG} recognizes that myriad examples of automated parser generating tools exist today.  Some are almost ubiquitous examples, such as @command{lex} and @command{yacc}, and their derivatives.  Others have specialized purpose.  Yet others are simply an attempt to build a better mousetrap.
+@sp 1
+@acronym{EGG} probably fits more into the latter category.
+@sp 1
+The primary motivators of the @acronym{EGG} tool set are threefold:
+@itemize
+@item
+Produce a @acronym{BNF} grammar description language that is both powerful enough to describe most grammars, yet be clear and readable to hopefully most users.
+@item
+Produce a @acronym{BNF} grammar that lends itself to the generation of a recursive descent parsing engine.
+@item
+Produce the tools required to generate such a parser, and to examine and transform the internal representation of such a parser.
+@end itemize
+
+A secondary motivator has been the author's constant obsession to explore new and interesting ways to automate software development.
+@c preface END
+@end iftex
+
+@headings on
+
+@c introduction BEGIN
+@node Introduction,@acronym{EGG} Explained,Top,Top
+@page
+@unnumbered Introduction
+@acronym{EGG} is the name of a specific and strictly defined @acronym{BNF} style grammar definition language.
+@sp 1
+The name @acronym{EGG} is loosely an acronym for @samp{Expression Grammar, Grammar}.  This acronym is neither precise, nor official.  The name @acronym{EGG} is mostly intended to imply the beginning of something, particularly the beginning of a formal grammar, which can grow into a complete parser for that grammar.
+@sp 1
+@acronym{EGG} also serves as the foundation, a starting point, for creating a precisely defined grammar.  From this grammar, the source code for a parser can be generated.
+@sp 1
+This User Guide contains the official documentation for the @acronym{EGG} language itself, and  the usage documentation for three associated utilities named @command{embryo}, @command{egg-walker}, and @command{egg-mapper}.  These three utilities are respectively the standard parser code generator, and its associated grammar checking and diagramming utilities.  Details for the usage and command line options for each of these utilities is documented.  Additionally, the output that each of these utilities produces is explained in detail.
+@sp 1
+A step-by-step tutorial is included in this User Guide, to serve as both a grammar writing guide for @acronym{EGG} definitions, and to illustrate the work flow for generating a parser from the grammar that is defined in @acronym{EGG}.
+@sp 1
+Each chapter in this User Guide contains a high level statement of purpose, which is followed by sections that progressively get more detailed in nature.  For a first time reader of this User Guide, and especially for those new to @acronym{BNF} style grammar definition languages, it is suggested that reading the introductory sections of each chapter, and perusing the examples sections may provide a more meaningful learning experience.
+@sp 1
+It is likely that the example sections of each chapter, and the tutorial chapter are all that is necessary to get a working knowledge of how to implement a grammar in @acronym{EGG} and build a parser for that grammar.
+@c introduction END
+
+@node @acronym{EGG} Explained,embryo,Introduction,Top
+@chapter @acronym{EGG} Explained
+@cindex chapter, @acronym{EGG} Explained
+@menu
+* Brief History::
+* Purpose and Design Goals::
+* Elements of the @acronym{EGG} Syntax::
+* An Example Grammar Defined in @acronym{EGG}::
+@end menu
+
+@node Brief History
+@section Brief History
+In the late 1950s and early 1960s, much innovative work was being performed in the area of computer language development and formalization.  Borrowing from other works in areas such as mathematics and linguistics, John Backus, while working on the computer programming language @acronym{ALGOL}, proposed a method of precisely defining the grammar of @acronym{ALGOL} and its syntax.
+@sp 1
+Peter Naur later suggested this notation become known as Backus Normal Form.  Donald Knuth further proposed that the name of this notation be Backus-Naur Form.  Knuth noted that the @acronym{BNF} notation was not strictly a "normal" form, as used in computer science terminology, and because Naur had contributed to its refinement.
+@sp 1
+Backus-Naur Form has since been adopted as a major notation for defining most any computer programming language, as well as data structures, instruction sets for processors and virtual machines, and other concepts.  Backus-Naur Form is commonly known by its acronym, @acronym{BNF}.
+@sp 1
+@acronym{BNF} is a way of describing what are known as @dfn{context free grammars}.  To qualify as a context free grammar, a grammar must be able to be described by what are known as @dfn{production rules}.  Production rules are simply a way of stating that some named thing on the left side of the rule can be replaced by a thing or series of things on the right side of the rule.
+@sp 1
+What are the things in such production rules?  On the left side of the rule is the name of the rule itself, which is an abstract identifier.  On the right side of the rule, one or more terminal values (see below), and/or names of other grammar rules can exist.
+@sp 1
+A production rule can best be illustrated by example:
+
+@quotation
+@code{<number> ::= <digit> | <digit> <number>}
+@*
+@code{<digit> ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9}
+@end quotation
+@*
+In the above example we have two production rules.   The first rule <number> is defined as either a single digit, or a digit followed by another <number>.  The net effect of this rule is that a number is any sequence of 1 or more digits.  The second rule <digit> is defined as one of either a literal '0' character, or a literal '1' character, or a literal '2' character, and so forth.
+@sp 1
+Two important concepts exist in the <digit> rule.  The first concept is that of @dfn{alternation} in a rule.  A rule can match something, or something else, etc.  The second concept is that of a @dfn{terminal} value.  Terminal values are those items that can not be further defined by additional production rules.  Typically these are literal characters as in the above example, or strings of characters, such as 'PRINT'.  Terminals may also indicate a class of characters, such as <digit> which itself is left up to some external mechanism to provide. Terminals are also described as being atomic.  They can not be broken down any further.
+@sp 1
+Over time, many variants of @acronym{BNF} have been proposed, and some have been formalized into international standards, such as @acronym{EBNF} and @acronym{ABNF}.  Most of these variants address some of the perceived short comings of the original @acronym{BNF}.  Namely, the very non-intuitive syntax of indicating "or more" by including a recursive element in a right side rule definition.  In the above example a "| <digit> <number>" fragment is used, which in @acronym{BNF} means a digit followed by another number, which of course can expand to an infinitely long sequence of digits.
+@sp 1
+Also, defining a quantified sequence of items in a @acronym{BNF} production rule is cumbersome at best.  For instance, to define that a product code can be a sequence of 2, 3, 4, or 5 digits, a @acronym{BNF} rule would look like this:
+@sp 1
+    <product code> ::= <digit> <digit>
+                     | <digit> <digit> <digit>
+                     | <digit> <digit> <digit> <digit>
+                     | <digit> <digit> <digit> <digit> <digit>
+@sp 1
+Another possible issue with the original @acronym{BNF} is that rule names are denoted by the '<' and '>' brackets.  This in itself is not a problem, but then an ambiguity arises when a terminal character is a literal '<' or '>' character.  For instance:
+    <special instruction> ::= <bold>
+@sp 1
+Does the above rule mean that <special instruction> is an instance of another
+  rule named <bold>, or is it the literal sequence of characters '<', followed by 'bold' and '>'?
+ 
+Also, since terminal characters in @acronym{BNF} are simply unadorned in any way, the grammars that @acronym{BNF} define are limited to the @acronym{ASCII} character set, or something very
+similar such as @acronym{EBCDIC}, as literal characters.
+@sp 1
+These shortcomings, both perceived and real, have led to many different variants of @acronym{BNF}.  Some variants are formal, such as the aforementioned @acronym{EBNF} and @acronym{ABNF}.  Some are simply convenient alternatives for internal usage in a given organization or project.  Almost all of the @acronym{BNF} variants are attempts to make grammar definition more concise, with fewer production rules, or more readable, or to eliminate ambiguities, or to add other conveniences to the @acronym{BNF} definition.
+@sp 1
+This leads us to @acronym{EGG}, which is dubbed by the creator of @acronym{EGG} as "Yet Another @acronym{BNF}."  @acronym{YAB} was actually considered as a name for @acronym{EGG}, but has potentially unpleasant connotations in some human languages and circles, so @acronym{EGG} was chosen as the official name.
+@sp 1
+@node Purpose and Design Goals
+@section Purpose and Design Goals
+The intent of @acronym{EGG} is to define a @acronym{BNF} style language that satisfies two design requirements.
+@sp 1
+    -  @acronym{EGG} is designed to be easy to read and understand.
+    -  @acronym{EGG} is designed to be used in the automatic production of parser source code.
+@menu
+* Syntax Simplification::
+* Parser Source Code Generation::
+@end menu
+
+@node Syntax Simplification
+@subsection Syntax Simplification
+While any well formed @acronym{BNF} is capable of defining a grammar, one of the main design goals of @acronym{EGG} is to add a few syntactic elements to make defining a quantified number of items in a sequence reasonably easy to understand.  In addition, another design goal of @acronym{EGG} is to eliminate alternative ways of describing a grammar element or phrase.  For instance, some @acronym{BNF} systems may allow an asterisk ('*') to indicate zero or more instances of the preceding grammar item.   That same @acronym{BNF} system may also allow a more specific quantifier syntax, such as 'item[2-5]', which may indicate that two through five instances of item may occur in a sequence.
+@sp 1
+Allowing both styles of quantification short cutting syntax, while convenient, is redundant.  @acronym{EGG} eliminates this type of redundant syntax.  In @acronym{EGG}, there is generally only one syntactically correct way to describe a grammar element.
+@sp 1
+A side effect of the simplified nature of the @acronym{EGG} syntax is to promote consistent ways of defining different types of grammar constructs.  For instance, in @acronym{EGG}, there are no specific grouping operators, therefore only a single grammar item can be quantified.  This eliminates alternative and redundant styles of defining quantified sequences.  In @acronym{EGG}, a quantified sequence must first be defined as a phrase (rule) containing the sequence, then referenced by name in another phrase with a quantifier.
+@sp 1
+@node Parser Source Code Generation
+@subsection Parser Source Code Generation
+From its conception, @acronym{EGG} was designed to assist in the automatic generation of parser source code.  This source code can then be included in a larger project.  Several design decisions for the syntax of @acronym{EGG} have been made which balance the requirements of an author of a grammar with the requirements for automatically generating source code from that grammar.
+@sp 1
+@acronym{EGG} is designed to produce recursive descent style parsers, but nothing in the @acronym{EGG} language should preclude the generation of other types of parsers.
+
+@node Elements of the @acronym{EGG} Syntax
+@section Elements of the @acronym{EGG} Syntax
+From a high level, the syntax of @acronym{EGG} is fairly simple and straightforward.  In this section, each element of the @acronym{EGG} grammar itself will be explained in detail.
+@sp 1
+The most fundamental element of an @acronym{EGG} grammar definition is what is formally
+named a phrase.  A phrase consists of a phrase name (phrase-name), followed
+by an equal sign ('='), followed by a definition, followed by a terminating
+semicolon (';').
+@sp 1
+@acronym{EGG} itself is canonically defined using the @acronym{EGG} language.  Each phrase that makes up the entirety of the @acronym{EGG} grammar is detailed below.
+@sp 1
+The @acronym{EGG} grammar is broken down into a few basic sections.
+@sp 1
+@iftex
+@quotation
+@itemize
+@item
+Grammar Structure
+@item
+Types
+@item
+Symbols
+@item
+Character Classes
+@item
+@acronym{ASCII} Character Set
+@end itemize
+@end quotation
+@end iftex
+
+@menu
+* Grammar Structure::
+* Types::
+* Symbols::
+* Character Classes::
+* @acronym{ASCII} Character Set::
+@end menu
+
+@node Grammar Structure
+@subsection Grammar Structure
+Grammar Structure elements are likely the only elements that an author of a
+grammar using @acronym{EGG} will need to understand.  The additional phrases
+which define @acronym{EGG} are useful in formalizing the syntactic details of
+an @acronym{EGG} grammar.  A grasp of these Grammar Structure elements should
+yield a reasonably intuitive understanding of a grammar defined in
+@acronym{EGG}.
+@sp 1
+@quotation
+@table @code
+@item grammar
+zero or more @code{grammar-element},
+followed by zero or one @code{non-grammar-element}
+@sp 1
+This is the foundational phrase for the @acronym{EGG} grammar.  It encompasses
+the entire collection of phrases that make up an @acronym{EGG} grammar.
+@sp 1
+@cartouche
+@code{
+  grammar@ =@*
+  @ @ grammar-element@{0,*@}@*
+  @ @ +@ non-grammar-element@{0,1@}@ ;
+}
+@end cartouche
+@sp 1
+@item grammar-element
+zero or one @code{non-grammar-element},
+followed by @code{phrase}
+@sp 1
+This phrase allows non essential parts of an @acronym{EGG} definition to exist,
+such as comments and white space proceeding other phrase definitions.
+@sp 1
+@cartouche
+@code{
+  grammar-element@ =@*
+  @ @ non-grammar-element@{0,1@}@*
+  @ @ +@ phrase@ ;
+}
+@end cartouche
+@sp 1
+@item phrase
+@code{phrase-name},
+followed by zero or one @code{non-grammar-element},
+followed by @code{equal},
+followed by zero or one @code{non-grammar-element},
+followed by @code{definition},
+followed by zero or one @code{non-grammar-element},
+followed by @code{semicolon}
+@sp 1
+This is the most fundamental element of the @acronym{EGG} grammar. All
+@acronym{EGG} grammar definitions are composed of a collection of phrases.
+@sp 1
+@cartouche
+@code{
+  phrase@ =@*
+  @ @ phrase-name@*
+  @ @ +@ non-grammar-element@{0,1@}@*
+  @ @ +@ equal@*
+  @ @ +@ non-grammar-element@{0,1@}@*
+  @ @ +@ definition@*
+  @ @ +@ non-grammar-element@{0,1@}@*
+  @ @ +@ phrase-terminator-symbol@ ;
+}
+@end cartouche
+@sp 1
+@item definition
+@code{sequence},
+followed by zero or more @code{definition-continuation}
+@sp 1
+@cartouche
+@code{
+  definition@ =@*
+  @ @ sequence@*
+  @ @ +@ definition-continuation@{0,*@}@ ;
+}
+@end cartouche
+@item definition-continuation
+zero or one @code{non-grammar-element},
+followed by @code{alternation-symbol},
+followed by zero or one @code{non-grammar-element},
+followed by @code{sequence}
+@sp 1
+@cartouche
+@code{
+  definition-continuation@ =@*
+  @ @ non-grammar-element@{0,1@}@*
+  @ @ +@ alternation-symbol@*
+  @ @ +@ non-grammar-element@{0,1@}@*
+  @ @ +@ sequence@ ;
+}
+@end cartouche
+@sp 1
+@item sequence
+@code{item},
+followed by zero or more @code{sequence-continuation}
+@sp 1
+@cartouche
+@code{
+  @ @ sequence@ =@*
+  @ @ item@*
+  @ @ +@ sequence-continuation@{0,*@}@ ;
+}
+@end cartouche
+@sp 1
+@item sequence-continuation
+zero or one @code{non-grammar-element},
+followed by @code{concatenation-symbol},
+followed by zero or one @code{non-grammar-element},
+followed by @code{item} 
+@sp 1
+@cartouche
+@code{
+  sequence-continuation@ =@*
+  @ @ non-grammar-element@{0,1@}@*
+  @ @ +@ concatenation-symbol@*
+  @ @ +@ non-grammar-element@{0,1@}@*
+  @ @ +@ item@ ;
+}
+@end cartouche
+@sp 1
+@item item
+@code{atom},
+followed by zero or one @code{quantifier}
+@sp 1
+@cartouche
+@code{
+  item@ =@*
+  @ @ atom@*
+  @ @ +@ quantifier@{0,1@}@ ;
+}
+@end cartouche
+@sp 1
+@item atom
+one of @code{literal}, or @code{phrase-name}
+@sp 1
+@cartouche
+@code{
+  atom@ =@*
+  @ @ literal@*
+  @ @ |@ phrase-name@ ;
+}
+@end cartouche
+@sp 1
+@end table
+@end quotation
+
+@node Types
+@subsection Types
+These phrases formalize and refine the syntax for individual @acronym{EGG}
+elements, such as how a quantifier, phrase-name or literal is expressed.
+@sp 1
+@quotation
+@table @code
+@item quantifier
+@code{open-brace},
+followed by @code{integer},
+followed by zero or one @code{quantifier-option},
+followed by @code{close-brace}
+@sp 1
+@cartouche
+@code{
+  quantifier-item@ =@*
+  @ @ integer@*
+  @ @ |@ asterisk@ ;
+}
+@end cartouche
+@sp 1
+@item quantifier-option
+@code{comma}, followed by @code{quantifier-item}
+@sp 1
+@cartouche
+@code{
+  quantifier-option@ =@*
+  @ @ comma@*
+  @ @ +@ quantifier-item@ ;
+}
+@end cartouche
+@sp 1
+@item quantifier-item
+one of @code{integer}, or @code{asterisk}
+@sp 1
+@cartouche
+@code{
+  quantifier-item@ =@*
+  @ @ integer@*
+  @ @ |@ asterisk@ ;
+}
+@end cartouche
+@sp 1
+@item phrase-name
+@code{letter}, followed by zero or one @code{phrase-name-character}
+@sp 1
+@cartouche
+@code{
+  phrase-name-character@ =@*
+  @ @ letter@*
+  @ @ |@ decimal-digit@*
+  @ @ |@ phrase-conjugator@ ;
+}
+@end cartouche
+@sp 1
+@item non-grammar-element
+one or more @code{non-grammar-item}
+@sp 1
+@cartouche
+@code{
+  non-grammar-element@@ =@*
+  @ @ non-grammar-item@{1,*@}@@ ;
+}
+@end cartouche
+@sp 1
+@item non-grammar-item
+one of @code{control-character}, or @code{illumination}
+@sp 1
+@cartouche
+@code{
+  non-grammar-item@ =@*
+  @ @ control-character@*
+  @ @ |@ illumination@ ;
+}
+@end cartouche
+@sp 1
+@item illumination
+one of @code{white-space}, or @code{comment}
+@sp 1
+@cartouche
+@code{
+  illumination@ =@*
+  @ @ white-space@*
+  @ @ |@ comment@ ;
+}
+@end cartouche
+@sp 1
+@item comment
+@code{comment-start-symbol}, followed by zero or more @code{comment-item},
+followed by @code{comment-end-symbol}
+@sp 1
+@cartouche
+@code{
+  comment@ =@*
+  @ @ comment-start-symbol@*
+  @ @ +@ comment-item@{0,*@}@*
+  @ @ +@ comment-end-symbol@ ;
+}
+@end cartouche
+@sp 1
+@item comment-item
+one of @code{comment}, or @code{comment-character}
+@sp 1
+@cartouche
+@code{
+  comment-item@ =@*
+  @ @ comment@*
+  @ @ |@ comment-character@ ;
+}
+@end cartouche
+@sp 1
+@item literal
+one of @code{single-quoted-literal}, @code{quoted-literal}, or
+@code{absolute-literal}
+@sp 1
+@cartouche
+@code{
+  literal@ =@*
+  @ @ single-quoted-literal@*
+  @ @ |@ quoted-literal@*
+  @ @ |@ absolute-literal@ ;
+}
+@end cartouche
+@sp 1
+@item single-quoted-literal
+@code{single-quote}, followed by one or more @code{single-quoted-character},
+followed by @code{single-quote}
+@sp 1
+@cartouche
+@code{
+  single-quoted-literal@ =@*
+  @ @ single-quote@*
+  @ @ @ @ +@ single-quoted-character@{1,*@}@*
+  @ @ @ @ +@ single-quote@ ;
+}
+@end cartouche
+@sp 1
+@item quoted-literal
+@code{quote}, followed by one or more @code{quoted-character}, followed by a
+@code{quote}
+@sp 1
+@cartouche
+@code{
+  single-quoted-literal@ =@*
+  @ @ single-quote@*
+  @ @ @ @ +@ single-quoted-character@{1,*@}@*
+  @ @ @ @ +@ single-quote@ ;
+}
+@end cartouche
+@sp 1
+@item absolute-literal
+@code{slash}, followed by zero or more @code{space}, followed by
+@code{integer}, followed by zero or more @code{space}, followed by @code{slash}
+@sp 1
+@cartouche
+@code{
+  absolute-literal@ =@*
+  @ @ slash@*
+  @ @ +@ space@{0,*@}@*
+  @ @ +@ integer@*
+  @ @ +@ space@{0,*@}@*
+  @ @ +@ slash@ ;
+}
+@end cartouche
+@sp 1
+@item integer
+one of @code{binary-integer}, @code{octal-integer}, @code{hexadecimal-integer},
+or @code{decimal-integer}
+@sp 1
+@cartouche
+@code{
+  integer@ =@*
+  @ @ binary-integer@*
+  @ @ @ @ |@ octal-integer@*
+  @ @ @ @ |@ hexadecimal-integer@*
+  @ @ @ @ |@ decimal-integer@ ;
+}
+@end cartouche
+@sp 1
+@item binary-integer
+@code{zero}, followed by @code{binary-indicator}, followed by one or more
+@code{binary-digit}
+@sp 1
+@cartouche
+@code{
+  binary-integer =@*
+  @ @ zero@*
+  @ @ @ @ +@ binary-indicator@*
+  @ @ @ @ +@ binary-digit@{1,*@}@ ;
+}
+@end cartouche
+@sp 1
+@item octal-integer
+@code{zero}, followed by @code{octal-indicator}, followed by one or more
+@code{octal-digit}
+@sp 1
+@cartouche
+@code{
+  octal-integer@ =@*
+  @ @ zero@*
+  @ @ @ @ +@ octal-indicator@*
+  @ @ @ @ +@ octal-digit@{1,*@}@ ;
+}
+@end cartouche
+@sp 1
+@item hexadecimal-integer
+@code{zero}, followed by @code{hexadecimal-indicator}, followed by one or more
+@code{hexadecimal-digit}
+@sp 1
+@cartouche
+@code{
+  hexadecimal-integer@ =@*
+  @ @ zero@*
+  @ @ @ @ +@ hexadecimal-indicator@*
+  @ @ @ @ +@ hexadecimal-digit@{1,*@}@ ;
+}
+@end cartouche
+@sp 1
+@item decimal-integer
+one or more @code{decimal-digit}
+@sp 1
+@cartouche
+@code{
+  decimal-integer@ =@*
+  @ @ decimal-digit@{1,*@}@ ;
+}
+@end cartouche
+@sp 1
+@end table
+@end quotation
+
+@node Symbols
+@subsection Symbols
+These phrases define a few specific symbol elements in the @acronym{EGG}
+grammar that either are more than one character long, or are an integral and
+common part of the @acronym{EGG} grammar.
+@sp 1
+@quotation
+@table @code
+@item comment-start-symbol
+@code{open-parenthesis}, followed by @code{asterisk}
+@sp 1
+@cartouche
+@code{
+  comment-start-symbol@ =@*
+  @ @ open-parenthesis@*
+  @ @ +@ asterisk@ ;
+}
+@end cartouche
+@sp 1
+@item comment-end-symbol
+@code{asterisk}, followed by @code{close-parenthesis}
+@sp 1
+@cartouche
+@code{
+  comment-end-symbol@ =@*
+  @ @ asterisk@*
+  @ @ +@ close-parenthesis@ ;
+}
+@end cartouche
+@sp 1
+@item alternation-symbol
+@code{bar}
+@sp 1
+@cartouche
+@code{
+  alternation-symbol@ =@*
+  @ @ bar@ ;
+}
+@end cartouche
+@sp 1
+@item concatenation-symbol
+@code{plus}
+@sp 1
+@cartouche
+@code{
+  concatenation-symbol@ =@*
+  @ @ plus@ ;
+}
+@end cartouche
+@sp 1
+@item phrase-terminator-symbol
+@code{semicolon}
+@sp 1
+@cartouche
+@code{
+  phrase-terminator-symbol@ =@*
+  @ @ semicolon@ ;
+}
+@end cartouche
+@sp 1
+@end table
+@end quotation
+
+@node Character Classes
+@subsection Character Classes
+These phrases define some commonly used classes (groupings) of characters that
+are useful in other @acronym{EGG} grammar elements, such as a
+@code{phrase-name}, an @code{integer}, etc.
+@sp 1
+@quotation
+@table @code
+@item control-character
+one of @code{nul}, @code{soh}, @code{stx}, @code{etx}, @code{eot}, @code{enq}, @code{ack}, @code{bel}, @code{bs}, @code{so}, @code{si}, @code{dle}, @code{dc1}, @code{dc2}, @code{dc3}, @code{dc4}, @code{nak}, @code{syn}, @code{etb}, @code{can}, @code{em}, @code{sub}, @code{esc}, @code{fs}, @code{gs}, @code{rs}, @code{us}, or @code{del}
+@sp 1
+@cartouche
+@code{
+  control-character@ =@*
+  @ @ nul@ |@ soh@ |@ stx@ |@ etx@ |@ eot@*
+  @ @ |@ enq@ |@ ack@ |@ bel@ |@ bs@ |@ so@*
+  @ @ |@ si@ |@ dle@ |@ dc1@ |@ dc2@ |@ dc3@*
+  @ @ |@ dc4@ |@ nak@ |@ syn@ |@ etb@ |@ can@*
+  @ @ |@ em@ |@ sub@ |@ esc@ |@ fs@ |@ gs@*
+  @ @ |@ rs@ |@ us@ |@ del@ ;
+}
+@end cartouche
+@sp 1
+@item upper-case-character
+one of @code{A}, @code{B}, @code{C}, @code{D}, @code{E}, @code{F}, @code{G}, @code{H}, @code{I}, @code{J}, @code{K}, @code{L}, @code{M}, @code{N}, @code{O}, @code{P}, @code{Q}, @code{R}, @code{S}, @code{T}, @code{U}, @code{V}, @code{W}, @code{X}, @code{Y}, or @code{Z}
+@sp 1
+@cartouche
+@code{
+  upper-case-letter@ =@*
+  @ @ A@ |@ B@ |@ C@ |@ D@ |@ E@*
+  @ @ |@ F@ |@ G@ |@ H@ |@ I@ |@ J@*
+  @ @ |@ K@ |@ L@ |@ M@ |@ N@ |@ O@*
+  @ @ |@ P@ |@ Q@ |@ R@ |@ S@ |@ T@*
+  @ @ |@ U@ |@ V@ |@ W@ |@ X@ |@ Y@*
+  @ @ |@ Z@ ;
+}
+@end cartouche
+@sp 1
+@item lower-case-character
+one of @code{a}, @code{b}, @code{c}, @code{d}, @code{e}, @code{f}, @code{g}, @code{h}, @code{i}, @code{j}, @code{k}, @code{l}, @code{m}, @code{n}, @code{o}, @code{p}, @code{q}, @code{r}, @code{s}, @code{t}, @code{u}, @code{v}, @code{w}, @code{x}, @code{y}, OR @code{z}
+@sp 1
+@cartouche
+@code{
+  lower-case-letter@ =@*
+  @ @ a@ |@ b@ |@ c@ |@ d@ |@ e@*
+  @ @ |@ f@ |@ g@ |@ h@ |@ i@ |@ j@*
+  @ @ |@ k@ |@ l@ |@ m@ |@ n@ |@ o@*
+  @ @ |@ p@ |@ q@ |@ r@ |@ s@ |@ t@*
+  @ @ |@ u@ |@ v@ |@ w@ |@ x@ |@ y@*
+  @ @ |@ z@ ;
+}
+@end cartouche
+@sp 1
+@item letter
+one of @code{upper-case-letter}, or @code{lower-case-letter}
+@sp 1
+@cartouche
+@code{
+  letter@ =@*
+  @ @ upper-case-letter@*
+  @ @ |@ lower-case-letter@ ;
+}
+@end cartouche
+@sp 1
+@item binary-digit
+one of @code{zero}, or @code{one}
+@sp 1
+@cartouche
+@code{
+  binary-digit@ =@*
+  @ @ zero@ |@ one@ ;
+}
+@end cartouche
+@sp 1
+@item octal-digit
+one of @code{zero}, @code{one}, @code{two}, @code{three}, @code{four}, @code{five}, @code{six}, or @code{seven}
+@sp 1
+@cartouche
+@code{
+  octal-digit@ =@*
+  @ @ zero@ |@ one@ |@ two@ |@ three@*
+  @ @ |@ four@ |@ five@ |@ six@*
+  @ @ |@ seven@ ;
+}
+@end cartouche
+@sp 1
+@item decimal-digit
+one of @code{zero}, @code{one}, @code{two}, @code{three}, @code{four}, @code{five}, @code{six}, @code{seven}, @code{eight} or @code{nine}
+@sp 1
+@cartouche
+@code{
+  decimal-digit@ =@*
+  @ @ zero@ |@ one@ |@ two@*
+  @ @ |@ three@ |@ four@ |@ five@*
+  @ @ |@ six@ |@ seven@ |@ eight@*
+  @ @ |@ nine@ ;
+}
+@end cartouche
+@sp 1
+@item hexadecimal-digit
+one of @code{zero}, @code{one}, @code{two}, @code{three}, @code{four}, @code{five}, @code{six}, @code{seven}, @code{eight}, @code{nine}, @code{A}, @code{B}, @code{C}, @code{D}, @code{E}, @code{F}, @code{a}, @code{b}, @code{c}, @code{d}, @code{e}, or @code{f}
+@sp 1
+@cartouche
+@code{
+  hexadecimal-digit@ =@*
+  @ @ zero@ |@ one@ |@ two@*
+  @ @ |@ three@ |@ four@ |@ five@*
+  @ @ |@ six@ |@ seven@ |@ eight@*
+  @ @ |@ nine@ |@ A@ |@ B@ |@ C@*
+  @ @ |@ D@ |@ E@ |@ F@ |@ a@ |@ b@*
+  @ @ |@ c@ |@ d@ |@ e@ |@ f@ ;
+}
+@end cartouche
+@sp 1
+@item white-space
+one of @code{space}, @code{ht}, @code{lf}, @code{vt}, @code{ff}, or @code{cr}
+@sp 1
+@cartouche
+@code{
+  white-space@ =@*
+  @ @ space@ |@ ht@ |@ lf@ |@ vt@*
+  @ @ |@ ff@ |@ cr@ ;
+}
+@end cartouche
+@sp 1
+@item common-character
+one of @code{exclamation-point}, @code{number-sign}, @code{dollar}, @code{percent}, @code{ampersand}, @code{plus}, @code{comma}, @code{minus}, @code{period}, @code{colon}, @code{semicolon}, @code{less-than}, @code{equal}, @code{greater-than}, @code{question-mark}, @code{at}, @code{open-bracket}, @code{back-slash}, @code{close-bracket}, @code{carat}, @code{underscore}, @code{back-quote}, @code{open-brace}, @code{bar}, @code{close-brace}, @code{tilde}, @code{letter}, or @code{decimal-digit}
+@sp 1
+@cartouche
+@code{
+  common-character@ =@*
+  @ @ exclamation-point@ |@ number-sign@*
+  @ @ |@ dollar@ |@ percent@ |@ ampersand@*
+  @ @ |@ plus@ |@ comma@ |@ minus@ |@ period@*
+  @ @ |@ colon@ |@ semicolon@ |@ less-than@*
+  @ @ |@ equal@ |@ greater-than@*
+  @ @ |@ question-mark@ |@ at@*
+  @ @ |@ open-bracket@ |@ back-slash@*
+  @ @ |@ close-bracket@ |@ carat@*
+  @ @ |@ underscore@ |@ back-quote@*
+  @ @ |@ open-brace@ |@ bar@*
+  @ @ |@ close-brace@ |@ tilde@ |@ letter@*
+  @ @ |@ decimal-digit@ ;
+}
+@end cartouche
+@sp 1
+@item literal-character
+one of @code{common-character}, @code{space}, @code{open-parenthesis}, @code{close-parenthesis}, or @code{asterisk}
+@sp 1
+@cartouche
+@code{
+  literal-character@ =@*
+  @ @ common-character@ |@ space@*
+  @ @ |@ open-parenthesis@ |@ close-parenthesis@*
+  @ @ |@ asterisk@ ;
+}
+@end cartouche
+@sp 1
+@item comment-basic-character
+one of @code{common-character}, @code{white-space}, @code{quote}, @code{single-quote}, or @code{slash}
+@sp 1
+@cartouche
+@code{
+  comment-basic-character@ =@*
+  @ @ common-character@ |@ white-space@ |@ quote@*
+  @ @ |@ single-quote@ |@ slash@ ;
+}
+@end cartouche
+@sp 1
+@item non-comment-start-character
+one of @code{comment-basic-character}, or @code{close-parenthesis}
+@sp 1
+@cartouche
+@code{
+  non-comment-start-character@ =@*
+  @ @ comment-basic-character@*
+  @ @ |@ close-parenthesis@ ;
+}
+@end cartouche
+@sp 1
+@item non-comment-end-character
+one of @code{comment-basic-character}, or @code{open-parenthesis}
+@sp 1
+@cartouche
+@code{
+  non-comment-end-character@ =@*
+  @ @ comment-basic-character@*
+  @ @ |@ open-parenthesis@ ;
+}
+@end cartouche
+@sp 1
+@item non-comment-start-sequence
+@code{open-parenthesis}, followed by @code{non-comment-start-character}
+@sp 1
+@cartouche
+@code{
+  non-comment-start-sequence@ =@*
+  @ @ open-parenthesis@*
+  @ @ +@ non-comment-start-character@ ;
+}
+@end cartouche
+@sp 1
+@item non-comment-end-sequence
+@code{asterisk}, followed by @code{non-comment-end-character}
+@sp 1
+@cartouche
+@code{
+  non-comment-end-sequence@ =@*
+  @ @ asterisk@*
+  @ @ +@ non-comment-end-character@ ;
+}
+@end cartouche
+@sp 1
+@item comment-character
+one of @code{comment-basic-character}, @code{non-comment-start-sequence}, @code{non-comment-end-sequence}, or @code{close-parenthesis}
+@sp 1
+@cartouche
+@code{
+  comment-character@ =@*
+  @ @ comment-basic-character@*
+  @ @ |@ non-comment-start-sequence@*
+  @ @ |@ non-comment-end-sequence@*
+  @ @ |@ close-parenthesis@ ;
+}
+@end cartouche
+@sp 1
+@item single-quoted-character
+one of @code{literal-character}, or @code{quote}
+@sp 1
+@cartouche
+@code{
+  single-quoted-character@ =@*
+  @ @ literal-character@ |@ quote@ ;
+}
+@end cartouche
+@sp 1
+@item quoted-character
+one of @code{literal-character}, or @code{single-quote}
+@sp 1
+@cartouche
+@code{
+  quoted-character@ =@*
+  @ @ literal-character@ |@ single-quote@ ;
+}
+@end cartouche
+@sp 1
+@item phrase-conjugator
+one of @code{underscore}, or @code{minus}
+@sp 1
+@cartouche
+@code{
+  phrase-conjugator@ =@*
+  @ @ underscore@ |@ minus@ ;
+}
+@end cartouche
+@sp 1
+@item phrase-name-character
+one of @code{letter}, @code{decimal-digit}, or @code{phrase-conjugator}
+@sp 1
+@cartouche
+@code{
+  phrase-name-character@ =@*
+  @ @ letter@ |@ decimal-digit@*
+  @ @ |@ phrase-conjugator@ ;
+}
+@end cartouche
+@sp 1
+@item binary-indicator
+one of @code{b}, or @code{B}
+@sp 1
+@cartouche
+@code{
+  binary-indicator@ =@*
+  @ @ b@ |@ B@ ;
+}
+@end cartouche
+@sp 1
+@item octal-indicator
+one of @code{o}, or @code{O}
+@sp 1
+@cartouche
+@code{
+  octal-indicator@ =@*
+  @ @ o@ |@ O@ ;
+}
+@end cartouche
+@sp 1
+@item hexadecimal-indicator
+one of @code{x}, or @code{X}
+@sp 1
+@cartouche
+@code{
+  hexadecimal-indicator@ =@*
+  @ @ x@ |@ X@ ;
+}
+@end cartouche
+@sp 1
+@end table
+@end quotation
+
+@node @acronym{ASCII} Character Set
+@subsection @acronym{ASCII} Character Set
+@sp 1
+The @acronym{EGG} definition includes phrases for each of the 128
+@acronym{ASCII} characters defined in the @acronym{ASCII} character set.  This
+has two distinct implications.
+@sp 1
+The first implication is that an @acronym{EGG} definition must use the
+@acronym{ASCII} character set, and that all 128 characters in the
+@acronym{ASCII} set will be properly handled by the standard @acronym{EGG}
+parser.
+@sp 1
+The second implication is that while an @acronym{EGG} definition must itself
+use the @acronym{ASCII} character set, any grammar it defines, and its
+associated parser is NOT required to use @acronym{ASCII} as its base character
+coding. In other words, a grammar can be defined that is specific to a locale's
+character set, but the @acronym{EGG} definition still must use @acronym{ASCII}.
+The resultant parser need not know anything about @acronym{ASCII} to properly
+parse the defining grammar.
+@sp 1
+For example, a grammar can be defined in @acronym{EGG} that describes the syntax
+for a configuration file that is in the Klingon language.  The resultant
+parser will parse the configuration file in Klingon encoding, not needing
+to know anything about the @acronym{ASCII} character set.
+@sp 1
+@quotation
+@table @code
+@item nul
+ASCII @samp{NUL}
+@sp 1
+@cartouche
+@code{nul = /0x00/ ;}
+@end cartouche
+@sp 1
+@item soh
+ASCII @samp{SOH (start of heading)}
+@sp 1
+@cartouche
+@code{soh = /0x01/ ;}
+@end cartouche
+@sp 1
+@item stx
+ASCII @samp{STX (start of text)}
+@sp 1
+@cartouche
+@code{stx = /0x02/ ;}
+@end cartouche
+@sp 1
+@item etx
+ASCII @samp{ETX (end of text)}
+@sp 1
+@cartouche
+@code{etx = /0x03/ ;}
+@end cartouche
+@sp 1
+@item eot
+ASCII @samp{EOT (end of transmission)}
+@sp 1
+@cartouche
+@code{eot = /0x04/ ;}
+@end cartouche
+@sp 1
+@item enq
+ASCII @samp{ENQ (enquiry)}
+@sp 1
+@cartouche
+@code{enq = /0x05/ ;}
+@end cartouche
+@sp 1
+@item ack
+ASCII @samp{ACK (acknowledge)}
+@sp 1
+@cartouche
+@code{ack = /0x06/ ;}
+@end cartouche
+@sp 1
+@item bel
+ASCII @samp{BEL (bell)}
+@sp 1
+@cartouche
+@code{bel = /0x07/ ;}
+@end cartouche
+@sp 1
+@item bs
+ASCII @samp{BS  (backspace)}
+@sp 1
+@cartouche
+@code{bs = /0x08/ ;}
+@end cartouche
+@sp 1
+@item ht
+ASCII @samp{HT  (horizontal tab)}
+@sp 1
+@cartouche
+@code{ht = /0x09/ ;}
+@end cartouche
+@sp 1
+@item lf
+ASCII @samp{LF  (new line)}
+@sp 1
+@cartouche
+@code{lf = /0x0A/ ;}
+@end cartouche
+@sp 1
+@item vt
+ASCII @samp{VT  (vertical tab)}
+@sp 1
+@cartouche
+@code{vt = /0x0B/ ;}
+@end cartouche
+@sp 1
+@item ff
+ASCII @samp{FF  (form feed)}
+@sp 1
+@cartouche
+@code{ff = /0x0C/ ;}
+@end cartouche
+@sp 1
+@item cr
+ASCII @samp{CR  (carriage ret)}
+@sp 1
+@cartouche
+@code{cr = /0x0D/ ;}
+@end cartouche
+@sp 1
+@item so
+ASCII @samp{SO  (shift out)}
+@sp 1
+@cartouche
+@code{so = /0x0E/ ;}
+@end cartouche
+@sp 1
+@item si
+ASCII @samp{SI  (shift in)}
+@sp 1
+@cartouche
+@code{si = /0x0F/ ;}
+@end cartouche
+@sp 1
+@item dle
+ASCII @samp{DLE (data link escape)}
+@sp 1
+@cartouche
+@code{dle = /0x10/ ;}
+@end cartouche
+@sp 1
+@item dc1
+ASCII @samp{DC1 (device control 1)}
+@sp 1
+@cartouche
+@code{dc1 = /0x11/ ;}
+@end cartouche
+@sp 1
+@item dc2
+ASCII @samp{DC2 (device control 2)}
+@sp 1
+@cartouche
+@code{dc2 = /0x12/ ;}
+@end cartouche
+@sp 1
+@item dc3
+ASCII @samp{DC3 (device control 3)}
+@sp 1
+@cartouche
+@code{dc3 = /0x13/ ;}
+@end cartouche
+@sp 1
+@item dc4
+ASCII @samp{DC4 (device control 4)}
+@sp 1
+@cartouche
+@code{dc4 = /0x14/ ;}
+@end cartouche
+@sp 1
+@item nak
+ASCII @samp{NAK (negative ack.)}
+@sp 1
+@cartouche
+@code{nak = /0x15/ ;}
+@end cartouche
+@sp 1
+@item syn
+ASCII @samp{SYN (synchronous idle)}
+@sp 1
+@cartouche
+@code{syn = /0x16/ ;}
+@end cartouche
+@sp 1
+@item etb
+ASCII @samp{ETB (end of trans. blk)}
+@sp 1
+@cartouche
+@code{etb = /0x17/ ;}
+@end cartouche
+@sp 1
+@item can
+ASCII @samp{CAN (cancel)}
+@sp 1
+@cartouche
+@code{can = /0x18/ ;}
+@end cartouche
+@sp 1
+@item em
+ASCII @samp{EM  (end of medium)}
+@sp 1
+@cartouche
+@code{em = /0x19/ ;}
+@end cartouche
+@sp 1
+@item sub
+ASCII @samp{SUB (substitute)}
+@sp 1
+@cartouche
+@code{sub = /0x1A/ ;}
+@end cartouche
+@sp 1
+@item esc
+ASCII @samp{ESC (escape)}
+@sp 1
+@cartouche
+@code{esc = /0x1B/ ;}
+@end cartouche
+@sp 1
+@item fs
+ASCII @samp{FS  (file separator)}
+@sp 1
+@cartouche
+@code{fs = /0x1C/ ;}
+@end cartouche
+@sp 1
+@item gs
+ASCII @samp{GS  (group separator)}
+@sp 1
+@cartouche
+@code{gs = /0x1D/ ;}
+@end cartouche
+@sp 1
+@item rs
+ASCII @samp{RS  (record separator)}
+@sp 1
+@cartouche
+@code{rs = /0x1E/ ;}
+@end cartouche
+@sp 1
+@item us
+ASCII @samp{US  (unit separator)}
+@sp 1
+@cartouche
+@code{us = /0x1F/ ;}
+@end cartouche
+@sp 1
+@item space
+ASCII @samp{SPACE}
+@sp 1
+@cartouche
+@code{space = /0x20/ ;}
+@end cartouche
+@sp 1
+@item exclamation-point
+ASCII @samp{!}
+@sp 1
+@cartouche
+@code{exclamation-point = /0x21/ ;}
+@end cartouche
+@sp 1
+@item quote
+ASCII @samp{"}
+@sp 1
+@cartouche
+@code{quote = /0x22/ ;}
+@end cartouche
+@sp 1
+@item number-sign
+ASCII @samp{#}
+@sp 1
+@cartouche
+@code{number-sign = /0x23/ ;}
+@end cartouche
+@sp 1
+@item dollar
+ASCII @samp{$}
+@sp 1
+@cartouche
+@code{dollar = /0x24/ ;}
+@end cartouche
+@sp 1
+@item percent
+ASCII @samp{%}
+@sp 1
+@cartouche
+@code{percent = /0x25/ ;}
+@end cartouche
+@sp 1
+@item ampersand
+ASCII @samp{&}
+@sp 1
+@cartouche
+@code{ampersand = /0x26/ ;}
+@end cartouche
+@sp 1
+@item single-quote
+ASCII @samp{'}
+@sp 1
+@cartouche
+@code{single-quote = /0x27/ ;}
+@end cartouche
+@sp 1
+@item open-parenthesis
+ASCII @samp{(}
+@sp 1
+@cartouche
+@code{open-parenthesis = /0x28/ ;}
+@end cartouche
+@sp 1
+@item close-parenthesis
+ASCII @samp{)}
+@sp 1
+@cartouche
+@code{close-parenthesis = /0x29/ ;}
+@end cartouche
+@sp 1
+@item asterisk
+ASCII @samp{*}
+@sp 1
+@cartouche
+@code{asterisk = /0x2A/ ;}
+@end cartouche
+@sp 1
+@item plus
+ASCII @samp{+}
+@sp 1
+@cartouche
+@code{plus = /0x2B/ ;}
+@end cartouche
+@sp 1
+@item comma
+ASCII @samp{,}
+@sp 1
+@cartouche
+@code{comma = /0x2C/ ;}
+@end cartouche
+@sp 1
+@item minus
+ASCII @samp{-}
+@sp 1
+@cartouche
+@code{minus = /0x2D/ ;}
+@end cartouche
+@sp 1
+@item period
+ASCII @samp{.}
+@sp 1
+@cartouche
+@code{period = /0x2E/ ;}
+@end cartouche
+@sp 1
+@item slash
+ASCII @samp{/}
+@sp 1
+@cartouche
+@code{slash = /0x2F/ ;}
+@end cartouche
+@sp 1
+@item zero
+ASCII @samp{0}
+@sp 1
+@cartouche
+@code{zero = /0x30/ ;}
+@end cartouche
+@sp 1
+@item one
+ASCII @samp{1}
+@sp 1
+@cartouche
+@code{one = /0x31/ ;}
+@end cartouche
+@sp 1
+@item two
+ASCII @samp{2}
+@sp 1
+@cartouche
+@code{two = /0x32/ ;}
+@end cartouche
+@sp 1
+@item three
+ASCII @samp{3}
+@sp 1
+@cartouche
+@code{three = /0x33/ ;}
+@end cartouche
+@sp 1
+@item four
+ASCII @samp{4}
+@sp 1
+@cartouche
+@code{four = /0x34/ ;}
+@end cartouche
+@sp 1
+@item five
+ASCII @samp{5}
+@sp 1
+@cartouche
+@code{five = /0x35/ ;}
+@end cartouche
+@sp 1
+@item six
+ASCII @samp{6}
+@sp 1
+@cartouche
+@code{six = /0x36/ ;}
+@end cartouche
+@sp 1
+@item seven
+ASCII @samp{7}
+@sp 1
+@cartouche
+@code{seven = /0x37/ ;}
+@end cartouche
+@sp 1
+@item eight
+ASCII @samp{8}
+@sp 1
+@cartouche
+@code{eight = /0x38/ ;}
+@end cartouche
+@sp 1
+@item nine
+ASCII @samp{9}
+@sp 1
+@cartouche
+@code{nine = /0x39/ ;}
+@end cartouche
+@sp 1
+@item colon
+ASCII @samp{:}
+@sp 1
+@cartouche
+@code{colon = /0x3A/ ;}
+@end cartouche
+@sp 1
+@item semicolon
+ASCII @samp{;}
+@sp 1
+@cartouche
+@code{semicolon = /0x3B/ ;}
+@end cartouche
+@sp 1
+@item less-than
+ASCII @samp{<}
+@sp 1
+@cartouche
+@code{less-than = /0x3C/ ;}
+@end cartouche
+@sp 1
+@item equal
+ASCII @samp{=}
+@sp 1
+@cartouche
+@code{equal = /0x3D/ ;}
+@end cartouche
+@sp 1
+@item greater-than
+ASCII @samp{>}
+@sp 1
+@cartouche
+@code{greater-than = /0x3E/ ;}
+@end cartouche
+@sp 1
+@item question-mark
+ASCII @samp{?}
+@sp 1
+@cartouche
+@code{question-mark = /0x3F/ ;}
+@end cartouche
+@sp 1
+@item at
+ASCII @samp{@@}
+@sp 1
+@cartouche
+@code{at = /0x40/ ;}
+@end cartouche
+@sp 1
+@item A
+ASCII @samp{A}
+@sp 1
+@cartouche
+@code{A = /0x41/ ;}
+@end cartouche
+@sp 1
+@item B
+ASCII @samp{B}
+@sp 1
+@cartouche
+@code{B = /0x42/ ;}
+@end cartouche
+@sp 1
+@item C
+ASCII @samp{C}
+@sp 1
+@cartouche
+@code{C = /0x43/ ;}
+@end cartouche
+@sp 1
+@item D
+ASCII @samp{D}
+@sp 1
+@cartouche
+@code{D = /0x44/ ;}
+@end cartouche
+@sp 1
+@item E
+ASCII @samp{E}
+@sp 1
+@cartouche
+@code{E = /0x45/ ;}
+@end cartouche
+@sp 1
+@item F
+ASCII @samp{F}
+@sp 1
+@cartouche
+@code{F = /0x46/ ;}
+@end cartouche
+@sp 1
+@item G
+ASCII @samp{G}
+@sp 1
+@cartouche
+@code{G = /0x47/ ;}
+@end cartouche
+@sp 1
+@item H
+ASCII @samp{H}
+@sp 1
+@cartouche
+@code{H = /0x48/ ;}
+@end cartouche
+@sp 1
+@item I
+ASCII @samp{I}
+@sp 1
+@cartouche
+@code{I = /0x49/ ;}
+@end cartouche
+@sp 1
+@item J
+ASCII @samp{J}
+@sp 1
+@cartouche
+@code{J = /0x4A/ ;}
+@end cartouche
+@sp 1
+@item K
+ASCII @samp{K}
+@sp 1
+@cartouche
+@code{K = /0x4B/ ;}
+@end cartouche
+@sp 1
+@item L
+ASCII @samp{L}
+@sp 1
+@cartouche
+@code{L = /0x4C/ ;}
+@end cartouche
+@sp 1
+@item M
+ASCII @samp{M}
+@sp 1
+@cartouche
+@code{M = /0x4D/ ;}
+@end cartouche
+@sp 1
+@item N
+ASCII @samp{N}
+@sp 1
+@cartouche
+@code{N = /0x4E/ ;}
+@end cartouche
+@sp 1
+@item O
+ASCII @samp{O}
+@sp 1
+@cartouche
+@code{O = /0x4F/ ;}
+@end cartouche
+@sp 1
+@item P
+ASCII @samp{P}
+@sp 1
+@cartouche
+@code{P = /0x50/ ;}
+@end cartouche
+@sp 1
+@item Q
+ASCII @samp{Q}
+@sp 1
+@cartouche
+@code{Q = /0x51/ ;}
+@end cartouche
+@sp 1
+@item R
+ASCII @samp{R}
+@sp 1
+@cartouche
+@code{R = /0x52/ ;}
+@end cartouche
+@sp 1
+@item S
+ASCII @samp{S}
+@sp 1
+@cartouche
+@code{S = /0x53/ ;}
+@end cartouche
+@sp 1
+@item T
+ASCII @samp{T}
+@sp 1
+@cartouche
+@code{T = /0x54/ ;}
+@end cartouche
+@sp 1
+@item U
+ASCII @samp{U}
+@sp 1
+@cartouche
+@code{U = /0x55/ ;}
+@end cartouche
+@sp 1
+@item V
+ASCII @samp{V}
+@sp 1
+@cartouche
+@code{V = /0x56/ ;}
+@end cartouche
+@sp 1
+@item W
+ASCII @samp{W}
+@sp 1
+@cartouche
+@code{W = /0x57/ ;}
+@end cartouche
+@sp 1
+@item X
+ASCII @samp{X}
+@sp 1
+@cartouche
+@code{X = /0x58/ ;}
+@end cartouche
+@sp 1
+@item Y
+ASCII @samp{Y}
+@sp 1
+@cartouche
+@code{Y = /0x59/ ;}
+@end cartouche
+@sp 1
+@item Z
+ASCII @samp{Z}
+@sp 1
+@cartouche
+@code{Z = /0x5A/ ;}
+@end cartouche
+@sp 1
+@item open-bracket
+ASCII @samp{[}
+@sp 1
+@cartouche
+@code{open-bracket = /0x5B/ ;}
+@end cartouche
+@sp 1
+@item back-slash
+ASCII @samp{\}
+@sp 1
+@cartouche
+@code{back-slash = /0x5C/ ;}
+@end cartouche
+@sp 1
+@item close-bracket
+ASCII @samp{]}
+@sp 1
+@cartouche
+@code{close-bracket = /0x5D/ ;}
+@end cartouche
+@sp 1
+@item carat
+ASCII @samp{^}
+@sp 1
+@cartouche
+@code{carat = /0x5E/ ;}
+@end cartouche
+@sp 1
+@item underscore
+ASCII @samp{_}
+@sp 1
+@cartouche
+@code{underscore = /0x5F/ ;}
+@end cartouche
+@sp 1
+@item back-quote
+ASCII @samp{`}
+@sp 1
+@cartouche
+@code{back-quote = /0x60/ ;}
+@end cartouche
+@sp 1
+@item a
+ASCII @samp{a}
+@sp 1
+@cartouche
+@code{a = /0x61/ ;}
+@end cartouche
+@sp 1
+@item b
+ASCII @samp{b}
+@sp 1
+@cartouche
+@code{b = /0x62/ ;}
+@end cartouche
+@sp 1
+@item c
+ASCII @samp{c}
+@sp 1
+@cartouche
+@code{c = /0x63/ ;}
+@end cartouche
+@sp 1
+@item d
+ASCII @samp{d}
+@sp 1
+@cartouche
+@code{d = /0x64/ ;}
+@end cartouche
+@sp 1
+@item e
+ASCII @samp{e}
+@sp 1
+@cartouche
+@code{e = /0x65/ ;}
+@end cartouche
+@sp 1
+@item f
+ASCII @samp{f}
+@sp 1
+@cartouche
+@code{f = /0x66/ ;}
+@end cartouche
+@sp 1
+@item g
+ASCII @samp{g}
+@sp 1
+@cartouche
+@code{g = /0x67/ ;}
+@end cartouche
+@sp 1
+@item h
+ASCII @samp{h}
+@sp 1
+@cartouche
+@code{h = /0x68/ ;}
+@end cartouche
+@sp 1
+@item i
+ASCII @samp{i}
+@sp 1
+@cartouche
+@code{i = /0x69/ ;}
+@end cartouche
+@sp 1
+@item j
+ASCII @samp{j}
+@sp 1
+@cartouche
+@code{j = /0x6A/ ;}
+@end cartouche
+@sp 1
+@item k
+ASCII @samp{k}
+@sp 1
+@cartouche
+@code{k = /0x6B/ ;}
+@end cartouche
+@sp 1
+@item l
+ASCII @samp{l}
+@sp 1
+@cartouche
+@code{l = /0x6C/ ;}
+@end cartouche
+@sp 1
+@item m
+ASCII @samp{m}
+@sp 1
+@cartouche
+@code{m = /0x6D/ ;}
+@end cartouche
+@sp 1
+@item n
+ASCII @samp{n}
+@sp 1
+@cartouche
+@code{n = /0x6E/ ;}
+@end cartouche
+@sp 1
+@item o
+ASCII @samp{o}
+@sp 1
+@cartouche
+@code{o = /0x6F/ ;}
+@end cartouche
+@sp 1
+@item p
+ASCII @samp{p}
+@sp 1
+@cartouche
+@code{p = /0x70/ ;}
+@end cartouche
+@sp 1
+@item q
+ASCII @samp{q}
+@sp 1
+@cartouche
+@code{q = /0x71/ ;}
+@end cartouche
+@sp 1
+@item r
+ASCII @samp{r}
+@sp 1
+@cartouche
+@code{r = /0x72/ ;}
+@end cartouche
+@sp 1
+@item s
+ASCII @samp{s}
+@sp 1
+@cartouche
+@code{s = /0x73/ ;}
+@end cartouche
+@sp 1
+@item t
+ASCII @samp{t}
+@sp 1
+@cartouche
+@code{t = /0x74/ ;}
+@end cartouche
+@sp 1
+@item u
+ASCII @samp{u}
+@sp 1
+@cartouche
+@code{u = /0x75/ ;}
+@end cartouche
+@sp 1
+@item v
+ASCII @samp{v}
+@sp 1
+@cartouche
+@code{v = /0x76/ ;}
+@end cartouche
+@sp 1
+@item w
+ASCII @samp{w}
+@sp 1
+@cartouche
+@code{w = /0x77/ ;}
+@end cartouche
+@sp 1
+@item x
+ASCII @samp{x}
+@sp 1
+@cartouche
+@code{x = /0x78/ ;}
+@end cartouche
+@sp 1
+@item y
+ASCII @samp{y}
+@sp 1
+@cartouche
+@code{y = /0x79/ ;}
+@end cartouche
+@sp 1
+@item z
+ASCII @samp{z}
+@sp 1
+@cartouche
+@code{z = /0x7A/ ;}
+@end cartouche
+@sp 1
+@item open-brace
+ASCII @samp{@{}
+@sp 1
+@cartouche
+@code{open-brace = /0x7B/ ;}
+@end cartouche
+@sp 1
+@item bar
+ASCII @samp{|}
+@sp 1
+@cartouche
+@code{bar = /0x7C/ ;}
+@end cartouche
+@sp 1
+@item close-brace
+ASCII @samp{@}}
+@sp 1
+@cartouche
+@code{close-brace = /0x7D/ ;}
+@end cartouche
+@sp 1
+@item tilde
+ASCII @samp{~}
+@sp 1
+@cartouche
+@code{tilde = /0x7E/ ;}
+@end cartouche
+@sp 1
+@item del
+ASCII @samp{DEL}
+@sp 1
+@cartouche
+@code{del = /0x7F/ ;}
+@end cartouche
+@end table
+@end quotation
+
+@node An Example Grammar Defined in @acronym{EGG}
+@section An Example Grammar Defined in @acronym{EGG}
+A very simple @acronym{EGG} definition follows:
+
+@example
+
+(* A comment *)
+command = add | delete | list ;
+
+add = 'add' + code ;
+
+delete-command = 'delete' | 'del' ;
+
+delete = (* an inline comment *) delete-command + code ;
+
+list = 'list' + code@{0,1@} ;
+
+code = code-chars@{1,*@} ;
+
+code-chars = 'A'|'B'|'C'|'D' ;
+
+@end example
+
+@noindent
+An equivalent definition could also be:
+
+@example
+
+(*a very compact example @acronym{EGG} definition*)
+command=add|delete|list;
+add='add'+code;
+delete-command='delete'|'del';
+delete=delete-command+code;
+list='list'+code@{0,1@};
+code=code-chars@{1,*@};
+code-chars='A'|'B'|'C'|'D';
+
+@end example
+
+@noindent
+In the above example, a grammar has been defined that consists of one top level
+phrase named @code{command}.
+
+A @code{command} can be either an @code{add}, @code{delete}, or @code{list}.
+
+@code{add} is the literal string @samp{add} followed by a @code{code}.
+
+@code{delete} is the literal string @samp{delete} or the literal string
+@samp{del}, followed by a @code{code}.
+
+@code{list} is the literal string @samp{list} optionally followed by a
+@code{code}.
+
+A @code{code} is a sequence, in any order, or one or more literal @samp{A},
+@samp{B}, @samp{C}, or @samp{D} characters.
+
+In this grammar, all of the following examples would parse without error:
+
+@example
+
+ addABCD
+ delABCD
+ list
+ listABCD
+ addC
+ addCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCBBBBCCCCCCCCCA
+
+@end example
+
+but, the following would cause a parser failure:
+
+@example
+
+ add ABCD  (the example grammar does not allow for spaces)
+ add       (a code is required)
+
+@end example
+
+@node embryo
+@chapter embryo
+@menu
+* embryo Purpose::
+* embryo Invocation::
+* embryo Options Explained::
+* embryo Output::
+* embryo Examples::
+@end menu
+
+@node embryo Purpose
+@section Purpose
+
+@node embryo Invocation
+@section Invocation
+
+@node embryo Options Explained
+@section Options Explained
+
+@node embryo Output
+@section Output
+
+@node embryo Examples
+@section Examples
+
+@node embryo Output Explained
+@chapter embryo Output Explained
+
+@node egg-walker
+@chapter egg-walker
+@menu
+* egg-walker Purpose::
+* egg-walker Invocation::
+* egg-walker Options Explained::
+* egg-walker Output::
+* egg-walker Examples::
+@end menu
+
+@node egg-walker Purpose
+@section Purpose
+
+@node egg-walker Invocation
+@section Invocation
+
+@node egg-walker Options Explained
+@section Options Explained
+
+@node egg-walker Output
+@section Output
+
+@node egg-walker Examples
+@section Examples
+
+@node egg-walker Output Explained
+@chapter egg-walker Output Explained
+
+@node egg-mapper
+@chapter egg-mapper
+@menu
+* egg-mapper Purpose::
+* egg-mapper Invocation::
+* egg-mapper Options Explained::
+* egg-mapper Output::
+* egg-mapper Examples::
+@end menu
+
+@node egg-mapper Purpose
+@section Purpose
+
+@node egg-mapper Invocation
+@section Invocation
+
+@node egg-mapper Options Explained
+@section Options Explained
+
+@node egg-mapper Output
+@section Output
+
+@node egg-mapper Examples
+@section Examples
+
+@node egg-mapper Output Explained
+@chapter egg-mapper Output Explained
+
+@node Tutorial - Creating a parser from an @acronym{EGG}
+@chapter Tutorial - Creating a parser from an @acronym{EGG}
+@menu
+* Simple Example::
+* An @acronym{EGG} @acronym{EGG}::
+* SPICE model::
+@end menu
+
+@node Simple Example
+@section Simple Example
+
+@node An @acronym{EGG} @acronym{EGG}
+@section An @acronym{EGG} @acronym{EGG}
+
+@node SPICE model
+@section SPICE model
+
+@node Terms
+@appendix Terms
+
+@node Bibliography
+@unnumbered Bibliography
+
+@node Index
+@unnumbered Index
+
+@printindex cp
+
+@bye
+

@@ -1,0 +1,323 @@
+                         (* Version 1.0 *)
+                         (* 2013/12/25  *)
+
+                     (*                     *)
+                     (* ASCII character set *)
+                     (*                     *)
+
+nul =               /0x00/ ;    (* NUL *)
+soh =               /0x01/ ;    (* SOH (start of heading) *)
+stx =               /0x02/ ;    (* STX (start of text) *)
+etx =               /0x03/ ;    (* ETX (end of text) *)
+eot =               /0x04/ ;    (* EOT (end of transmission) *)
+enq =               /0x05/ ;    (* ENQ (enquiry) *)
+ack =               /0x06/ ;    (* ACK (acknowledge) *)
+bel =               /0x07/ ;    (* BEL (bell) *)
+bs =                /0x08/ ;    (* BS  (backspace) *)
+ht =                /0x09/ ;    (* HT  (horizontal tab) *)
+lf =                /0x0A/ ;    (* LF  (new line) *)
+vt =                /0x0B/ ;    (* VT  (vertical tab) *)
+ff =                /0x0C/ ;    (* FF  (form feed) *)
+cr =                /0x0D/ ;    (* CR  (carriage ret) *)
+so =                /0x0E/ ;    (* SO  (shift out) *)
+si =                /0x0F/ ;    (* SI  (shift in) *)
+dle =               /0x10/ ;    (* DLE (data link escape) *)
+dc1 =               /0x11/ ;    (* DC1 (device control 1) *)
+dc2 =               /0x12/ ;    (* DC2 (device control 2) *)
+dc3 =               /0x13/ ;    (* DC3 (device control 3) *)
+dc4 =               /0x14/ ;    (* DC4 (device control 4) *)
+nak =               /0x15/ ;    (* NAK (negative ack.) *)
+syn =               /0x16/ ;    (* SYN (synchronous idle) *)
+etb =               /0x17/ ;    (* ETB (end of trans. blk) *)
+can =               /0x18/ ;    (* CAN (cancel) *)
+em =                /0x19/ ;    (* EM  (end of medium) *)
+sub =               /0x1A/ ;    (* SUB (substitute) *)
+esc =               /0x1B/ ;    (* ESC (escape) *)
+fs =                /0x1C/ ;    (* FS  (file separator) *)
+gs =                /0x1D/ ;    (* GS  (group separator) *)
+rs =                /0x1E/ ;    (* RS  (record separator) *)
+us =                /0x1F/ ;    (* US  (unit separator) *)
+space =             /0x20/ ;    (* SPACE *)
+exclamation-point = /0x21/ ;    (* ! *)
+quote =             /0x22/ ;    (* " *)
+number-sign =       /0x23/ ;    (* # *)
+dollar =            /0x24/ ;    (* $ *)
+percent =           /0x25/ ;    (* % *)
+ampersand =         /0x26/ ;    (* & *)
+single-quote =      /0x27/ ;    (* ' *)
+open-parenthesis =  /0x28/ ;    (* ( *)
+close-parenthesis = /0x29/ ;    (* ) *)
+asterisk =          /0x2A/ ;    (* * *)
+plus =              /0x2B/ ;    (* + *)
+comma =             /0x2C/ ;    (* , *)
+minus =             /0x2D/ ;    (* - *)
+period =            /0x2E/ ;    (* . *)
+slash =             /0x2F/ ;    (* / *)
+zero =              /0x30/ ;    (* 0 *)
+one =               /0x31/ ;    (* 1 *)
+two =               /0x32/ ;    (* 2 *)
+three =             /0x33/ ;    (* 3 *)
+four =              /0x34/ ;    (* 4 *)
+five =              /0x35/ ;    (* 5 *)
+six =               /0x36/ ;    (* 6 *)
+seven =             /0x37/ ;    (* 7 *)
+eight =             /0x38/ ;    (* 8 *)
+nine =              /0x39/ ;    (* 9 *)
+colon =             /0x3A/ ;    (* : *)
+semicolon =         /0x3B/ ;    (* ; *)
+less-than =         /0x3C/ ;    (* < *)
+equal =             /0x3D/ ;    (* = *)
+greater-than =      /0x3E/ ;    (* > *)
+question-mark =     /0x3F/ ;    (* ? *)
+at =                /0x40/ ;    (* @ *)
+A =                 /0x41/ ;    (* A *)
+B =                 /0x42/ ;    (* B *)
+C =                 /0x43/ ;    (* C *)
+D =                 /0x44/ ;    (* D *)
+E =                 /0x45/ ;    (* E *)
+F =                 /0x46/ ;    (* F *)
+G =                 /0x47/ ;    (* G *)
+H =                 /0x48/ ;    (* H *)
+I =                 /0x49/ ;    (* I *)
+J =                 /0x4A/ ;    (* J *)
+K =                 /0x4B/ ;    (* K *)
+L =                 /0x4C/ ;    (* L *)
+M =                 /0x4D/ ;    (* M *)
+N =                 /0x4E/ ;    (* N *)
+O =                 /0x4F/ ;    (* O *)
+P =                 /0x50/ ;    (* P *)
+Q =                 /0x51/ ;    (* Q *)
+R =                 /0x52/ ;    (* R *)
+S =                 /0x53/ ;    (* S *)
+T =                 /0x54/ ;    (* T *)
+U =                 /0x55/ ;    (* U *)
+V =                 /0x56/ ;    (* V *)
+W =                 /0x57/ ;    (* W *)
+X =                 /0x58/ ;    (* X *)
+Y =                 /0x59/ ;    (* Y *)
+Z =                 /0x5A/ ;    (* Z *)
+open-bracket =      /0x5B/ ;    (* [ *)
+back-slash =        /0x5C/ ;    (* \ *)
+close-bracket =     /0x5D/ ;    (* ] *)
+carat =             /0x5E/ ;    (* ^ *)
+underscore =        /0x5F/ ;    (* _ *)
+back-quote =        /0x60/ ;    (* ` *)
+a =                 /0x61/ ;    (* a *)
+b =                 /0x62/ ;    (* b *)
+c =                 /0x63/ ;    (* c *)
+d =                 /0x64/ ;    (* d *)
+e =                 /0x65/ ;    (* e *)
+f =                 /0x66/ ;    (* f *)
+g =                 /0x67/ ;    (* g *)
+h =                 /0x68/ ;    (* h *)
+i =                 /0x69/ ;    (* i *)
+j =                 /0x6A/ ;    (* j *)
+k =                 /0x6B/ ;    (* k *)
+l =                 /0x6C/ ;    (* l *)
+m =                 /0x6D/ ;    (* m *)
+n =                 /0x6E/ ;    (* n *)
+o =                 /0x6F/ ;    (* o *)
+p =                 /0x70/ ;    (* p *)
+q =                 /0x71/ ;    (* q *)
+r =                 /0x72/ ;    (* r *)
+s =                 /0x73/ ;    (* s *)
+t =                 /0x74/ ;    (* t *)
+u =                 /0x75/ ;    (* u *)
+v =                 /0x76/ ;    (* v *)
+w =                 /0x77/ ;    (* w *)
+x =                 /0x78/ ;    (* x *)
+y =                 /0x79/ ;    (* y *)
+z =                 /0x7A/ ;    (* z *)
+open-brace =        /0x7B/ ;    (* { *)
+bar =               /0x7C/ ;    (* | *)
+close-brace =       /0x7D/ ;    (* } *)
+tilde =             /0x7E/ ;    (* ~ *)
+del =               /0x7F/ ;    (* DEL *)
+
+                      (*                   *)
+                      (* Character Classes *)
+                      (*                   *)
+
+control-character = nul | soh | stx | etx | eot | enq | ack | bel | bs
+                  | so | si | dle | dc1 | dc2 | dc3 | dc4 | nak | syn
+                  | etb | can | em | sub | esc | fs | gs | rs | us
+                  | del ;
+
+upper-case-letter = A | B | C | D | E | F | G | H | I | J | K | L | M
+                  | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
+                  ;
+
+lower-case-letter = a | b | c | d | e | f | g | h | i | j | k | l | m
+                  | n | o | p | q | r | s | t | u | v | w | x | y | z
+                  ;
+
+letter = upper-case-letter | lower-case-letter ;
+
+binary-digit = zero | one ;
+
+octal-digit = zero | one | two | three | four | five | six | seven ;
+
+decimal-digit = zero | one | two | three | four
+              | five | six | seven | eight | nine ;
+
+hexadecimal-digit = zero | one | two | three | four
+                  | five | six | seven | eight | nine
+                  | A | B | C | D | E | F
+                  | a | b | c | d | e | f ;
+
+white-space = space | ht | lf | vt | ff | cr ;
+
+common-character = exclamation-point | number-sign | dollar | percent
+                 | ampersand | plus | comma | minus | period | colon
+                 | semicolon | less-than | equal | greater-than
+                 | question-mark | at | open-bracket | back-slash
+                 | close-bracket | carat | underscore | back-quote
+                 | open-brace | bar | close-brace | tilde | letter
+                 | decimal-digit ;
+
+literal-character = common-character
+                  | space
+                  | open-parenthesis
+                  | close-parenthesis
+                  | asterisk ;
+
+comment-basic-character = common-character
+                        | white-space
+                        | quote
+                        | single-quote
+                        | slash ;
+
+non-comment-start-character = comment-basic-character
+                            | close-parenthesis ;
+
+non-comment-end-character = comment-basic-character
+                          | open-parenthesis ;
+
+non-comment-start-sequence = open-parenthesis
+                             + non-comment-start-character ;
+
+non-comment-end-sequence = asterisk
+                           + non-comment-end-character ;
+    
+comment-character = comment-basic-character
+                  | non-comment-start-sequence
+                  | non-comment-end-sequence
+                  | close-parenthesis ;
+
+single-quoted-character = literal-character | quote ;
+
+quoted-character = literal-character | single-quote ;
+
+phrase-conjugator = underscore | minus ;
+
+phrase-name-character = letter | decimal-digit | phrase-conjugator ;
+
+binary-indicator = b | B ;
+
+octal-indicator = o | O ;
+
+hexadecimal-indicator = x | X ;
+
+                           (*         *)
+                           (* Symbols *)
+                           (*         *)
+
+comment-start-symbol = open-parenthesis + asterisk ;
+
+comment-end-symbol = asterisk + close-parenthesis ;
+
+alternation-symbol = bar ;
+
+concatenation-symbol = plus ;
+
+phrase-terminator-symbol = semicolon ;
+
+                            (*       *)
+                            (* Types *)
+                            (*       *)
+
+binary-integer = zero
+                 + binary-indicator
+                 + binary-digit{1,*} ;
+
+octal-integer = zero
+                + octal-indicator
+                + octal-digit{1,*} ;
+
+hexadecimal-integer = zero
+                      + hexadecimal-indicator
+                      + hexadecimal-digit{1,*} ;
+
+decimal-integer = decimal-digit{1,*} ;
+
+integer = binary-integer
+        | octal-integer
+        | hexadecimal-integer
+        | decimal-integer ;
+
+single-quoted-literal = single-quote
+                        + single-quoted-character{1,*}
+                        + single-quote ;
+
+quoted-literal = quote + quoted-character{1,*} + quote ;
+
+absolute-literal = slash + space{0,*} + integer + space{0,*} + slash ;
+
+literal = single-quoted-literal | quoted-literal | absolute-literal ;
+
+comment-item = comment | comment-character ;
+
+comment = comment-start-symbol
+          + comment-item{0,*}
+          + comment-end-symbol ;
+
+illumination = white-space | comment ;
+
+non-grammar-item = control-character | illumination ;
+
+non-grammar-element = non-grammar-item{1,*} ;
+
+phrase-name = letter + phrase-name-character{0,*} ;
+
+quantifier-item = integer | asterisk ;
+
+quantifier-option = comma + quantifier-item ;
+
+quantifier = open-brace
+             + integer
+             + quantifier-option{0,1}
+             + close-brace ;
+
+                      (*                   *)
+                      (* Grammar Structure *)
+                      (*                   *)
+
+atom = literal | phrase-name ;
+
+item = atom + quantifier{0,1} ;
+
+sequence-continuation = non-grammar-element{0,1}
+                        + concatenation-symbol
+                        + non-grammar-element{0,1}
+                        + item ;
+
+sequence = item + sequence-continuation{0,*} ;
+
+definition-continuation = non-grammar-element{0,1}
+                          + alternation-symbol
+                          + non-grammar-element{0,1}
+                          + sequence ;
+
+definition = sequence + definition-continuation{0,*} ;
+
+phrase = phrase-name
+         + non-grammar-element{0,1}
+         + equal
+         + non-grammar-element{0,1}
+         + definition
+         + non-grammar-element{0,1}
+         + phrase-terminator-symbol ;
+
+grammar-element = non-grammar-element{0,1} + phrase ;
+
+grammar = grammar-element{1,*} + non-grammar-element{0,1} ;

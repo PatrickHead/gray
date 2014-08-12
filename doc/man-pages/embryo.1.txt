@@ -1,0 +1,173 @@
+= EMBRYO(1)
+:doctype: manpage
+:man source: GNU
+:man manual: embryo Command Usage
+
+== Name
+embryo - EGG parser generator
+
+== Synopsis
+[verse]
+_________
+*embryo* *-p, --project-name=*'PROJECT_NAME' \
+       [*-g, --generate-list=*'GENERATE_LIST'] \
+       [*-d, --directory=*'OUTPUT_DIRECTORY'] \
+       [*-o, --output-type=*'OUTPUT_TYPE'] \
+       [*--use-doxygen=*'true' | 'false' | 'on' | 'off' | '1' | '0'] \
+       [*--code-version=*'VERSION'] \
+       [*--author=*'AUTHOR'] \
+       [*--email=*'EMAIL_ADDRESS'] \
+       [*--first-year=*'4_DIGIT_YEAR'] \
+       [*--license-text=*'LICENSE_TEXT'] \
+       [*--use-external-usage=*'true' | 'false' | 'on' | 'off' | '1' | '0'] \
+       ['EGG_FILE']
+
+*embryo* *-v, --version*
+
+*embryo* *-h, --help*
+_________
+
+== Description
+Generates the header, source and build files for any grammar defined in an
+*EGG* file.  Depending on command options, *embryo* will produce the source
+code for a parser module than can be linked into any project needing such a
+parser.  *embryo* also produces the source code for a command that can be used
+to generically parse and dump the results of any file written in the grammar
+defined by the *EGG* file used to produce this parser.  In other words, a test
+program to help develop the grammar itself, and to test various input scenarios
+against the grammar.
+
+== Options
+
+*-h, --help*::
+Display a usage message on *STDERR*, which includes the program version, and
+the information from the *Synopsis* and *Options* sections of this manual.
+
+*-v, --version*::
+Display the program version on *STDERR*.
+
+*-p, --project-name=*'PROJECT_NAME'::
+Specify name of project.  This name is used for the base name in output,
+including but not limited to variable, function, and file names.  It is
+good convention to restrict this name to only upper/lower case letters and
+the hyphen(-) character.  
+
+NOTE:  This is a mandatory setting.
+
+ [*-g, --generate-list=*'GENERATE_LIST']::
+Specify output to create.  This is a non-space containing string, where:
+
+[verse]
+    "'h'" -- output C header files
+    "'s'" -- output C source files
+    "'m'" -- output Make or automake files for sub-project
+
+[verse]
+Defaults to "'hs'".
+
+ [*-d, --directory=*'OUTPUT_DIRECTORY']::
+Specify the top-level directory where output will be stored.  Defaults to the
+current working directory.  
+
+NOTE:  Usage of this option implies the '-o f' option.
+
+ [*-o, --output-type=*'OUTPUT_TYPE']::
+Specify where output is sent, where:
+
+[verse]
+    "'f'" -- a disk file or files.
+    "'-'" -- STDOUT
+
+[verse]
+Defaults to STDOUT.
+
+ [*--use-doxygen=*'true' | 'false' | 'on' | 'off' | '1' | '0']::
+Flag to turn on or off Doxygen type source code markup in generated source and
+headers.  Off will generate basic conventional function header document blocks
+and annotations.  "'true'" will generate Doxygen markup for document blocks and
+annotations.  Defaults to "'false'".
+
+ [*--code-version=*'VERSION']::
+A code version string to use in document blocks.  The format of this string is
+arbitrary.  Defaults to "'0.0.1'".
+
+ [*--author=*'AUTHOR']::
+The author/creator of the generated parser code.  Usually the author of the
+EGG grammar definition file.  Defaults to "'Anonymous'".
+
+ [*--email=*'EMAIL_ADDRESS']::
+An email address for technical questions regarding the parser and/or grammar.
+ No default.
+
+ [*--first-year=*'4_DIGIT_YEAR']::
+The first year of copyright for the parser and/or grammar.  Should be in YYYY
+format.  Defaults to current year.
+
+ [*--license-text=*'LICENSE_TEXT']::
+License text to be included in generated source code.  Defaults to GPLv3+.
+
+ [*--use-external-usage=*'true' | 'false' | 'on' | 'off' | '1' | '0']::
+Flag to turn on or off the use of an external include file for the usage()
+function that is generated for the 'PROJECT'*-walker* source code.  Off will
+generate the usage() function code in the 'PROJECT-walker.c' file itself.
+"'true'" will generate an include directive, which points to a file name
+'PROJECT-walker-usage.inc'.  Defaults to "'false'".
+
+ ['EGG_FILE']::
+Specify the name of the *EGG* file.  A single "'-'" character will read input
+from *STDIN*.  Defaults to *STDIN*.
+
+== Exit Status
+On exit, *embryo* returns
+[verse]
+0 -- on success
+1 -- on any error
+
+== Example
+The following command,
+
+[verse]
+`embryo -p mygrammar -g hs -d . mygrammar.egg`
+
+will produce the following files,
+
+[verse]
+'mygrammar-mapper.c'
+'mygrammar-parser.c'
+'mygrammar-token.c'
+'mygrammar-token-util.c'
+'mygrammar-walker.c'
+'mygrammar-parser.h'
+'mygrammar-token.h'
+'mygrammar-token-type.h'
+'mygrammar-token-util.h'
+
+from which the *mygrammar-walker* utility and 'mygrammar-parser.o' object
+module can be produced.
+
+== Author
+Written by Patrick Head <pth@patrickhead.net>
+
+== Copyright
+(C) 2013-2014 Patrick Head
+
+include::license.txt[]
+
+== Bugs
+Report *embryo* bugs to egg-bugs@patrickhead.net
+
+== Home Page
+*EGG* home page http://www.patrickhead.net/egg
+
+== See Also
+egg-walker(1), egg-mapper(1)
+
+The full documentation for *embryo* and writing grammars in *EGG* is maintained
+as a Texinfo manual.  If the *info* command and the *EGG* package are properly
+installed at your site, the command
+
+[verse]
+`info egg`
+
+should give you access to the complete manual.
+

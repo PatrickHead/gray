@@ -1,0 +1,25 @@
+== License
+
+All source code distributed with this program and the *GRAY* package as a whole,
+and all utilities supplied with the source code for building the *GRAY* package
+are covered by the following license.
+
+[verse]
+    GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.  
+    This is free software: you are free to change and redistribute it. There
+    is NO WARRANTY, to the extent permitted by law.
+
+A full text of the GPLv3+ license is included with the source code for the
+*GRAY* package in the 'COPYING' file.
+
+All documentation and ancillary files distributed with this program and the
+*GRAY* package as a whole, that are not deemed to be source code by the GPLv3+
+license, are covered by the following license.
+
+[verse]
+    FDLv1.3+:  GNU FDL version 1.3 or later <http://gnu.org/licenses/fdl.html>.
+    This is free documentation: you are free to change and redistribute it.
+    There is NO WARRANTY, to the extent permitted by law.
+
+A full text of the GFDLv1.3+ license is included with the source code for the
+*GRAY* package in the 'COPYING_DOCUMENTATION' file.

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+for file in $(find $1 -name '*.c' -o -name '*.h')
+do
+  mtime=$(date +%Y%m%d%H%M.%S -r $file)
+  timestamp=$(date --utc --rfc-2822 -r $file)
+  if grep '@timestamp' $file >/dev/null 2>&1
+  then
+    sed -i -e "1,50s/@timestamp .*/@timestamp $timestamp/" $file
+    touch -t $mtime $file
+  elif grep 'Timestamp:' $file >/dev/null 2>&1
+  then
+    sed -i -e "1,50s/Timestamp: .*/Timestamp: $timestamp/" $file
+    touch -t $mtime $file
+  fi
+done
+

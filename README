@@ -1,0 +1,34 @@
+
+gray library
+============
+
+The gray library is a collection of simple, yet hopefully useful utility modules.
+
+The gray library includes these modules:
+
+  list.o - a generic linked list manager
+  grid.o - a generic grid(matrix/spreadsheet) manager
+  grid-size.o - a grid size object structure that accompanies grid.o
+  grid-api.o - a more full featured single function command based wrapper
+               around grid.o
+  grid-xml.o - an XML import/export module for grid.o
+  color.o - a simple RGBA color object structure
+  color-xml.o - an XML import/export module for color.o
+  vertex.o - a simple 3D vertex object structure
+  vertex-xml.o - an XML import/export module for vertex.o
+  vertices.o - a list of vertex manager
+  vertices-xml.o - an XML import/export module for vertices.o
+  xml-extensions.o - extensions to the libxml2 library
+  strapp.o - a string append function to supplement the ubiquitous str* functions
+  sieve.o - helper functions for creating an input stream sieve using a
+            doc-list.
+  reference.o - a simple per user persistent object reference counter
+  doc-list.o - a filtering function that can divide any STDIO input stream into
+               separate text documents based on a regular expression and mark
+               a subset of these documents for easy processing later.
+
+The gray library is used by the blue library and possibly other packages.
+
+Also, a complete set of user guide, tutorial, manpages, and reference manual
+can be built and installed from these sources.
+
