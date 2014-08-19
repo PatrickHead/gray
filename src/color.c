@@ -1,7 +1,7 @@
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
-#include "assert.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
 
 #include "color.h"
 
@@ -171,12 +171,14 @@ color_s *str2color(char *s)
 
   // NOTE: returned string is statically allocated, and this function is NOT
   //       re-entrant friendly.
-char *color2str(color_s c)
+char *color2str(color_s *c)
 {
   static char s[80];
 
+  assert(c);
+
   memset(s, 0, 80);
-  snprintf(s, 80, "[%f,%f,%f,%f]\n", c.r, c.g, c.b, c.a);
+  snprintf(s, 80, "[%f,%f,%f,%f]\n", c->r, c->g, c->b, c->a);
 
   return s;
 }

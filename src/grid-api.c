@@ -299,7 +299,7 @@ grid_api_status_s *grid_api_do(grid_api_s *ga,
         {
           data.repeat = abs(data.repeat);
           v->y -= data.repeat;
-					if (v->y < 0)
+          if (v->y < 0)
           {
             data.repeat += v->y;
             v->y = 0;
@@ -336,7 +336,7 @@ grid_api_status_s *grid_api_do(grid_api_s *ga,
         {
           data.repeat = abs(data.repeat);
           --v->x;
-					if (v->x < 0)
+          if (v->x < 0)
           {
             stat.code = -1;
             break;
@@ -374,14 +374,14 @@ grid_api_status_s *grid_api_do(grid_api_s *ga,
   }
 
     // Get statistical information that accompanies all commands
-	size = grid_get_size(grid_api->grid);
-	if (!size)
-		stat.code = -1;
-	else
-	{
-		stat.rows = grid_size_get_height(size);
-		stat.columns = grid_size_get_width(size);
-	}
+  size = grid_get_size(grid_api->grid);
+  if (!size)
+    stat.code = -1;
+  else
+  {
+    stat.rows = grid_size_get_height(size);
+    stat.columns = grid_size_get_width(size);
+  }
 
   stat.location = grid_get_location(grid_api->grid);
 
