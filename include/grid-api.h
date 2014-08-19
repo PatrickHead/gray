@@ -1,7 +1,47 @@
+/*!
+    @file grid-api.h
+
+    @brief HEADER_BRIEF
+
+    @timestamp Mon, 06 Jan 2014 15:17:36 +0000
+
+    @author Patrick Head  mailto:patrickhead@gmail.com
+
+    @copyright Copyright (C) 2014  Patrick Head
+
+    @license
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.@n
+    @n
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.@n
+    @n
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+  /*!
+
+    @file grid-api.h
+
+    HEADER_BRIEF
+
+    HEADER_DETAILS
+
+  */
+
 #ifndef GRID_API_H
 #define GRID_API_H
 
 #include "grid.h"
+
+  /*!
+    brief TYPEDEF_BRIEF
+  */
 
 typedef enum
 {
@@ -28,28 +68,57 @@ typedef enum
   grid_api_command_set_data
 } grid_api_command_t;
 
+  /*!
+    brief TYPEDEF_BRIEF
+  */
+
 typedef struct grid_api_status
 {
+    /*! brief ELEMENT_BRIEF */
   int code;
+    /*! brief ELEMENT_BRIEF */
   int rows;
+    /*! brief ELEMENT_BRIEF */
   int columns;
+    /*! brief ELEMENT_BRIEF */
   vertex_s *location;
+    /*! brief ELEMENT_BRIEF */
   void *data;
 } grid_api_status_s;
 
+  /*!
+    brief TYPEDEF_BRIEF
+  */
+
 typedef union
 {
+    /*! brief ELEMENT_BRIEF */
   int repeat;
+    /*! brief ELEMENT_BRIEF */
   vertex_s *location;
+    /*! brief ELEMENT_BRIEF */
   void *data;
 } grid_api_data_u;
 
+  /*!
+    brief TYPEDEF_BRIEF
+  */
+
 typedef struct grid_api
 {
+    /*! brief ELEMENT_BRIEF */
   void *_internals;
 } grid_api_s;
 
+  /*!
+    brief TYPEDEF_BRIEF
+  */
+
 typedef void *(*grid_api_data_func)(void *data);
+  /*!
+    brief TYPEDEF_BRIEF
+  */
+
 typedef void (*grid_api_free_func)(void *data);
 
 grid_api_s *grid_api_create(void);
