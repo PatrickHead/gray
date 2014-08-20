@@ -1,9 +1,9 @@
 /*!
     @file color-xml.h
 
-    @brief HEADER_BRIEF
+    @brief Header file for color XML data
 
-    @timestamp Mon, 06 Jan 2014 15:17:36 +0000
+    @timestamp Wed, 20 Aug 2014 03:54:45 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,16 +28,25 @@
 
     @file color-xml.h
 
-    HEADER_BRIEF
+    Header file for managing color data to/from XML format.
 
-    HEADER_DETAILS
+    XML Utility functions for converting color data to/from XML format.
 
+    Also includes a stream sieve function for building filter pipe lines on
+    STDIO that can capture or edit existing color data in XML format.
+
+    NOTE:  The user is responsible for including at least <libxml/tree.h> in
+           any source that includes this header.
   */
 
 #ifndef COLOR_XML_H
 #define COLOR_XML_H
 
+  // Base type include file(s)
+
 #include "color.h"
+
+  // Color XML function prototypes
 
 xmlDocPtr color_to_xml_doc(color_s *c);
 xmlNodePtr color_to_xml_node(color_s *c);

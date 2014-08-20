@@ -3,7 +3,7 @@
 
     @brief SOURCE_BRIEF
 
-    @timestamp Mon, 06 Jan 2014 15:17:36 +0000
+    @timestamp Wed, 20 Aug 2014 03:18:04 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 

@@ -1,9 +1,9 @@
 /*!
     @file grid.h
 
-    @brief HEADER_BRIEF
+    @brief Header file for grid (matrix/spreadsheet) data
 
-    @timestamp Mon, 06 Jan 2014 15:17:36 +0000
+    @timestamp Tue, 19 Aug 2014 05:12:38 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,49 +28,62 @@
 
     @file grid.h
 
-    HEADER_BRIEF
+    Header file for grid structured data management
 
-    HEADER_DETAILS
+    A grid (matrix/spreadsheet) is a 2 dimensional orthoganol structured array
+    of data cells.  Each cell contains a pointer to its neighboring cell to the
+    left, right, above and below.  These pointers allow for easy navigation to
+    any neighboring cell.   The data in each cell is generic, defined and
+    managed by the calling program, and can contain any desired data, including
+    another grid.
+
+    Functions are provided for adding new rows and columns to the grid, as well
+    as removing rows and columns.
 
   */
 
 #ifndef GRID_H
 #define GRID_H
 
+  // Base type include file(s)
+
 #include "grid-size.h"
 #include "vertex.h"
 
   /*!
-    brief TYPEDEF_BRIEF
-  */
-
-typedef void (*grid_payload_free)(void *payload);
-  /*!
-    brief TYPEDEF_BRIEF
-  */
-
-typedef int (*grid_payload_compare)(void *pl1, void *pl2);
-
-  /*!
-    brief TYPEDEF_BRIEF
+    brief Grid data structure
   */
 
 typedef struct
 {
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Pointer to internal information (encapsulates interface) */
   void *_internals;
 } grid_s;
+
+  /*!
+    brief Function templates for user defined data compare and free functions
+  */
+
+typedef void (*grid_payload_free)(void *payload);
+typedef int (*grid_payload_compare)(void *pl1, void *pl2);
+
+  // Grid function prototypes
+
+    // Structure managment functions 
 
 grid_s *grid_create(void);
 void grid_destroy(grid_s *g);
 void grid_free(grid_s *g);
 void grid_set_free(grid_s *g, grid_payload_free func);
 
+    // Getters/setters
+
 void grid_set_size(grid_s *g, grid_size_s *gs);
 void grid_set_size_free_only(grid_s *g, grid_size_s *gs);
 grid_size_s *grid_get_size(grid_s *g);
-
 vertex_s *grid_get_location(grid_s *g);
+
+    // Row/column management functions
 
 void grid_create_row(grid_s *g, int row);
 void grid_create_column(grid_s *g, int column);
@@ -79,14 +92,20 @@ void grid_free_column(grid_s *g, int column);
 void grid_destroy_row(grid_s *g, int row);
 void grid_destroy_column(grid_s *g, int column);
 
+    // Cell management functions
+
 void grid_clear_cell(grid_s *g);
 void *grid_get_cell(grid_s *g);
 void grid_set_cell(grid_s *g, void *payload);
+
+    // Cell search functions
 
 void *grid_find_by_reference(grid_s *g, void *reference);
 void *grid_find_by_value(grid_s *g,
                        void *value,
                        grid_payload_compare func);
+
+    // Cell "cursor" movement functions
 
 void *grid_origin(grid_s *g);
 void *grid_current(grid_s *g);

@@ -1,9 +1,9 @@
 /*!
     @file color.h
 
-    @brief HEADER_BRIEF
+    @brief Header file for color data
 
-    @timestamp Mon, 06 Jan 2014 15:17:36 +0000
+    @timestamp Wed, 20 Aug 2014 03:48:41 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,9 +28,18 @@
 
     @file color.h
 
-    HEADER_BRIEF
+    Header file for color data structure management.
 
-    HEADER_DETAILS
+    A simple color data storage and management system.  The color can have
+    a unique name, or tag.  This name can be used to identify the color itself
+    or to identify the purpose of the color, such as the name of a structure
+    or XML element.
+
+    Each color is stored in the standard RGBA (Red-Green-Blue-Alpha Channel)
+    format.  All color values are stored as double precision floats.  The RGB
+    values can be in the range of 0.0 through 255.0.  The Alpha Channel value
+    an be in the range of 0.0 through 1.0.  When Alpha is 0.0, the color is
+    considered to be 'none'.
 
   */
 
@@ -38,35 +47,39 @@
 #define COLOR_H
 
   /*!
-    brief TYPEDEF_BRIEF
+    brief Color data structure.
   */
 
 typedef struct
 {
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Unique identifier for color */
   char *tag;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Red value (0 - 255) */
   double r;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Green value (0 - 255) */
   double g;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Blue value (0 - 255) */
   double b;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Alpha Channel (transparency) (0.0 - 1.0) */
   double a;
 } color_s;
 
- //Special colors for blue tools
+  // Macros to easily set a color structure to standard Web colors with
+  // extensions for the X.org color palette.  These are the color names
+  // that correspond to the HTML 5 standards.
+
+  //Special colors for blue tools
 #define color_none(c) color_set(c, "none", 0.0, 0.0, 0.0, 0.0);
 #define color_is_none(c) ((!c->r)&&(!c->g)&&(!c->b)&&(!c->a)) ? 1 : 0;
 
- //Pink colors
+  //Pink colors
 #define color_pink(c) color_set_rgba(c, 255.0, 192.0, 203.0, 1.0);
 #define color_lightpink(c) color_set_rgba(c, 255.0, 182.0, 193.0, 1.0);
 #define color_hotpink(c) color_set_rgba(c, 255.0, 105.0, 180.0, 1.0);
 #define color_deeppink(c) color_set_rgba(c, 255.0, 20.0, 147.0, 1.0);
 #define color_palevioletred(c) color_set_rgba(c, 219.0, 112.0, 147.0, 1.0);
 #define color_mediumvioletred(c) color_set_rgba(c, 199.0, 21.0, 133.0, 1.0);
- //Red colors
+  //Red colors
 #define color_lightsalmon(c) color_set_rgba(c, 255.0, 160.0, 122.0, 1.0);
 #define color_salmon(c) color_set_rgba(c, 250.0, 128.0, 114.0, 1.0);
 #define color_darksalmon(c) color_set_rgba(c, 233.0, 150.0, 122.0, 1.0);
@@ -76,13 +89,13 @@ typedef struct
 #define color_firebrick(c) color_set_rgba(c, 178.0, 34.0, 34.0, 1.0);
 #define color_darkred(c) color_set_rgba(c, 139.0, 0.0, 0.0, 1.0);
 #define color_red(c) color_set_rgba(c, 255.0, 0.0, 0.0, 1.0);
- //Orange colors
+  //Orange colors
 #define color_orangered(c) color_set_rgba(c, 255.0, 69.0, 0.0, 1.0);
 #define color_tomato(c) color_set_rgba(c, 255.0, 99.0, 71.0, 1.0);
 #define color_coral(c) color_set_rgba(c, 255.0, 127.0, 80.0, 1.0);
 #define color_darkorange(c) color_set_rgba(c, 255.0, 140.0, 0.0, 1.0);
 #define color_orange(c) color_set_rgba(c, 255.0, 165.0, 0.0, 1.0);
- //Yellow colors
+  //Yellow colors
 #define color_yellow(c) color_set_rgba(c, 255.0, 255.0, 0.0, 1.0);
 #define color_lightyellow(c) color_set_rgba(c, 255.0, 255.0, 224.0, 1.0);
 #define color_lemonchiffon(c) color_set_rgba(c, 255.0, 250.0, 205.0, 1.0);
@@ -94,7 +107,7 @@ typedef struct
 #define color_khaki(c) color_set_rgba(c, 240.0, 230.0, 140.0, 1.0);
 #define color_darkkhaki(c) color_set_rgba(c, 189.0, 183.0, 107.0, 1.0);
 #define color_gold(c) color_set_rgba(c, 255.0, 215.0, 0.0, 1.0);
- //Brown colors
+  //Brown colors
 #define color_cornsilk(c) color_set_rgba(c, 255.0, 248.0, 220.0, 1.0);
 #define color_blanchedalmond(c) color_set_rgba(c, 255.0, 235.0, 205.0, 1.0);
 #define color_bisque(c) color_set_rgba(c, 255.0, 228.0, 196.0, 1.0);
@@ -112,7 +125,7 @@ typedef struct
 #define color_sienna(c) color_set_rgba(c, 160.0, 82.0, 45.0, 1.0);
 #define color_brown(c) color_set_rgba(c, 165.0, 42.0, 42.0, 1.0);
 #define color_maroon(c) color_set_rgba(c, 128.0, 0.0, 0.0, 1.0);
- //Green colors
+  //Green colors
 #define color_darkolivegreen(c) color_set_rgba(c, 85.0, 107.0, 47.0, 1.0);
 #define color_olive(c) color_set_rgba(c, 128.0, 128.0, 0.0, 1.0);
 #define color_olivedrab(c) color_set_rgba(c, 107.0, 142.0, 35.0, 1.0);
@@ -132,7 +145,7 @@ typedef struct
 #define color_forestgreen(c) color_set_rgba(c, 34.0, 139.0, 34.0, 1.0);
 #define color_green(c) color_set_rgba(c, 0.0, 128.0, 0.0, 1.0);
 #define color_darkgreen(c) color_set_rgba(c, 0.0, 100.0, 0.0, 1.0);
- //Cyan colors
+  //Cyan colors
 #define color_mediumaquamarine(c) color_set_rgba(c, 102.0, 205.0, 170.0, 1.0);
 #define color_cyan(c) color_set_rgba(c, 0.0, 255.0, 255.0, 1.0);
 #define color_aqua(c) color_set_rgba(c, 0.0, 255.0, 255.0, 1.0);
@@ -146,7 +159,7 @@ typedef struct
 #define color_cadetblue(c) color_set_rgba(c, 95.0, 158.0, 160.0, 1.0);
 #define color_darkcyan(c) color_set_rgba(c, 0.0, 139.0, 139.0, 1.0);
 #define color_teal(c) color_set_rgba(c, 0.0, 128.0, 128.0, 1.0);
- //Blue colors
+  //Blue colors
 #define color_lightsteelblue(c) color_set_rgba(c, 176.0, 196.0, 222.0, 1.0);
 #define color_powderblue(c) color_set_rgba(c, 176.0, 224.0, 230.0, 1.0);
 #define color_lightblue(c) color_set_rgba(c, 173.0, 216.0, 230.0, 1.0);
@@ -162,7 +175,7 @@ typedef struct
 #define color_darkblue(c) color_set_rgba(c, 0.0, 0.0, 139.0, 1.0);
 #define color_navy(c) color_set_rgba(c, 0.0, 0.0, 128.0, 1.0);
 #define color_midnightblue(c) color_set_rgba(c, 25.0, 25.0, 112.0, 1.0);
- //Purple colors
+  //Purple colors
 #define color_lavender(c) color_set_rgba(c, 230.0, 230.0, 250.0, 1.0);
 #define color_thistle(c) color_set_rgba(c, 216.0, 191.0, 216.0, 1.0);
 #define color_plum(c) color_set_rgba(c, 221.0, 160.0, 221.0, 1.0);
@@ -181,7 +194,7 @@ typedef struct
 #define color_darkslateblue(c) color_set_rgba(c, 72.0, 61.0, 139.0, 1.0);
 #define color_slateblue(c) color_set_rgba(c, 106.0, 90.0, 205.0, 1.0);
 #define color_mediumslateblue(c) color_set_rgba(c, 123.0, 104.0, 238.0, 1.0);
- //White colors
+  //White colors
 #define color_white(c) color_set_rgba(c, 255.0, 255.0, 255.0, 1.0);
 #define color_snow(c) color_set_rgba(c, 255.0, 250.0, 250.0, 1.0);
 #define color_honeydew(c) color_set_rgba(c, 240.0, 255.0, 240.0, 1.0);
@@ -199,7 +212,7 @@ typedef struct
 #define color_linen(c) color_set_rgba(c, 250.0, 240.0, 230.0, 1.0);
 #define color_lavenderblush(c) color_set_rgba(c, 255.0, 240.0, 245.0, 1.0);
 #define color_mistyrose(c) color_set_rgba(c, 255.0, 228.0, 225.0, 1.0);
- //Gray/Black colors
+  //Gray/Black colors
 #define color_gainsboro(c) color_set_rgba(c, 220.0, 220.0, 220.0, 1.0);
 #define color_lightgray(c) color_set_rgba(c, 211.0, 211.0, 211.0, 1.0);
 #define color_silver(c) color_set_rgba(c, 192.0, 192.0, 192.0, 1.0);
@@ -211,9 +224,15 @@ typedef struct
 #define color_darkslategray(c) color_set_rgba(c, 47.0, 79.0, 79.0, 1.0);
 #define color_black(c) color_set_rgba(c, 0.0, 0.0, 0.0, 1.0);
 
+  // Color function prototypes
+
+    // Structure management functions
+
 color_s *color_create(void);
 void color_destroy(color_s *c);
 color_s *color_copy(color_s *c);
+
+    // Comprehensive getter/setter
 
 void color_set(color_s *c, char *tag, double r, double g, double b, double a);
 void color_get(color_s *c,
@@ -223,8 +242,12 @@ void color_get(color_s *c,
                double *b,
                double *a);
 
+    // Color value only getter/setter
+
 void color_set_rgba(color_s *c, double r, double g, double b, double a);
 void color_get_rgba(color_s *c, double *r, double *g, double *b, double *a);
+
+    // Individual element getters/setters
 
 void color_set_tag(color_s *c, char *tag);
 char *color_get_tag(color_s *c);
@@ -241,7 +264,9 @@ double color_get_b(color_s *c);
 void color_set_a(color_s *c, double a);
 double color_get_a(color_s *c);
 
+    // Conversion functions
+
 color_s *str2color(char *s);
-char *color2str(color_s c);
+char *color2str(color_s *c);
 
 #endif // COLOR

@@ -1,9 +1,9 @@
 /*!
     @file grid-api.h
 
-    @brief HEADER_BRIEF
+    @brief Header file for grid (matrix/spreadsheet) data API
 
-    @timestamp Mon, 06 Jan 2014 15:17:36 +0000
+    @timestamp Wed, 20 Aug 2014 04:26:43 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,9 +28,15 @@
 
     @file grid-api.h
 
-    HEADER_BRIEF
+    Header file for grid API
 
-    HEADER_DETAILS
+    A simplified API for managing a grid with a unified function call using
+    a set of standard grid API commands.  This API also extends the standard
+    grid functions with abilities such as repeating grid operations multiple
+    times with one call, etc.
+
+    The grid API also provides a generic interface for user supplied functions
+    to edit, display, delete, copy and paste user data in each cell of the grid.
 
   */
 
@@ -40,7 +46,7 @@
 #include "grid.h"
 
   /*!
-    brief TYPEDEF_BRIEF
+    brief enum defining grid API commands
   */
 
 typedef enum
@@ -69,34 +75,34 @@ typedef enum
 } grid_api_command_t;
 
   /*!
-    brief TYPEDEF_BRIEF
+    brief Structure to hold grid API status information
   */
 
 typedef struct grid_api_status
 {
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Status code */
   int code;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Current number of rows in grid */
   int rows;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Current number of columns in grid */
   int columns;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Current "cursor" location (x,y address) in grid */
   vertex_s *location;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Pointer to possible returned status data */
   void *data;
 } grid_api_status_s;
 
   /*!
-    brief TYPEDEF_BRIEF
+    brief Union of data types used by grid_api_do()
   */
 
 typedef union
 {
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Command repeat count */
   int repeat;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief x,y address */
   vertex_s *location;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Cell data */
   void *data;
 } grid_api_data_u;
 
@@ -106,30 +112,31 @@ typedef union
 
 typedef struct grid_api
 {
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Pointer to internal API information (encapsulates interface) */
   void *_internals;
 } grid_api_s;
 
   /*!
-    brief TYPEDEF_BRIEF
+    brief Function templates for user defined data and data free functions
   */
 
 typedef void *(*grid_api_data_func)(void *data);
-  /*!
-    brief TYPEDEF_BRIEF
-  */
-
 typedef void (*grid_api_free_func)(void *data);
+
+  // grid API functions prototypes
+
+    // grid API management functions
 
 grid_api_s *grid_api_create(void);
 void grid_api_destroy(grid_api_s *ga);
 void grid_api_set_free(grid_api_s *ga, grid_api_free_func func);
-
 void grid_api_set_edit(grid_api_s *ga, grid_api_data_func func);
 void grid_api_set_show(grid_api_s *ga, grid_api_data_func func);
 void grid_api_set_delete(grid_api_s *ga, grid_api_data_func func);
 void grid_api_set_copy(grid_api_s *ga, grid_api_data_func func);
 void grid_api_set_paste(grid_api_s *ga, grid_api_data_func func);
+
+    // grid API command function
 
 grid_api_status_s *grid_api_do(grid_api_s *ga,
                                grid_api_command_t command,

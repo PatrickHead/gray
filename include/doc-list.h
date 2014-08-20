@@ -1,9 +1,9 @@
 /*!
     @file doc-list.h
 
-    @brief HEADER_BRIEF
+    @brief Header file for splitting and tagging STDIO data stream
 
-    @timestamp Mon, 06 Jan 2014 15:17:36 +0000
+    @timestamp Wed, 20 Aug 2014 04:10:04 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,9 +28,25 @@
 
     @file doc-list.h
 
-    HEADER_BRIEF
+    Header file for utility that splits and tags desired parts of STDIO stream
 
-    HEADER_DETAILS
+    A document list (doc-list) can be created from any STDIO stream (FILE *)
+    by supplying a single (can be complex) Regular Expression that is used
+    as a marker to split the stream into separate parts.  The resulting doc-list
+    will contain a list of these text parts.  In addition, a second distinct
+    Regular Expression can be supplied to create a list of pointers into the
+    doc-list that mark any "interesting" parts.
+
+    For example, a stream may contain many XML documents.  An RE can be
+    supplied that will split the stream into individual XML document texts.  In
+    addition, a second RE can be supplied that will identify all XML documents
+    with an XML element tag name of "customer" or "vendor" for later use by
+    a calling program.  This is just an example, as the REs can split and tag
+    most any text that can be imagined or needed by the caller.
+
+    Also, utility functions are provided that allow the user to produce new
+    parts to the doc-list, and to consume (remove) marked parts from the
+    doc-list.
 
   */
 
@@ -40,24 +56,26 @@
 #include "strapp.h"
 
   /*!
-    brief TYPEDEF_BRIEF
+    brief Document List data structure
   */
 
 typedef struct
 {
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Regular Expression for document matching (splitter) */
   char *mpat;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Number of parts in document list */
   int nlist;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Parts in document list */
   char **list;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Regular Expression for marked (keeper) parts */
   char *kpat;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Number of parts in keeper list */
   int nkeep;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Keeper list */
   char **keep;
 } doc_list_s;
+
+  // Document List API function prototypes
 
 doc_list_s *doc_list_create(FILE *f, char *mpat, char *kpat);
 void doc_list_destroy(doc_list_s *dl);
