@@ -3,7 +3,7 @@
 
     @brief Header file for grid (matrix/spreadsheet) data
 
-    @timestamp Tue, 19 Aug 2014 05:12:38 +0000
+    @timestamp Wed, 20 Aug 2014 04:48:44 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 

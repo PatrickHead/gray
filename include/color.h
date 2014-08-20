@@ -3,7 +3,7 @@
 
     @brief Header file for color data
 
-    @timestamp Wed, 20 Aug 2014 03:48:41 +0000
+    @timestamp Wed, 20 Aug 2014 04:45:56 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
