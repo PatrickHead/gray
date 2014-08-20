@@ -1,8 +1,52 @@
+/*!
+    @file grid-api.c
+
+    @brief SOURCE_BRIEF
+
+    @timestamp Mon, 06 Jan 2014 15:17:36 +0000
+
+    @author Patrick Head  mailto:patrickhead@gmail.com
+
+    @copyright Copyright (C) 2014  Patrick Head
+
+    @license
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.@n
+    @n
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.@n
+    @n
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+  /*!
+
+    @file grid-api.c
+
+    SOURCE_BRIEF
+
+    SOURCE_DETAILS
+
+  */
+
+  // Required system headers
+
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 
+  // Project related headers
+
 #include "grid-api.h"
+
+  /*!
+    brief TYPEDEF_BRIEF
+  */
 
 typedef struct _grid_api_internals
 {
@@ -14,63 +58,244 @@ typedef struct _grid_api_internals
   grid_api_data_func paste_func;
 } _grid_api_internals;
 
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
+
 _grid_api_internals *_grid_api_get_internals(grid_api_s *ga);
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
+
 grid_api_data_func _grid_api_get_edit_func(grid_api_s *ga);
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
+
 grid_api_data_func _grid_api_get_show_func(grid_api_s *ga);
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
+
 grid_api_data_func _grid_api_get_delete_func(grid_api_s *ga);
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
+
 grid_api_data_func _grid_api_get_copy_func(grid_api_s *ga);
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
+
 grid_api_data_func _grid_api_get_paste_func(grid_api_s *ga);
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 _grid_api_internals *_grid_api_get_internals(grid_api_s *ga)
 {
+    // Sanity check parameters.
   assert(ga);
+    // Return RETVAL
   return (ga->_internals);
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 grid_api_data_func _grid_api_get_edit_func(grid_api_s *ga)
 {
   _grid_api_internals *gain;
+    // Sanity check parameters.
   assert(ga);
   gain = _grid_api_get_internals(ga);
   if (!gain) return NULL;
+    // Return RETVAL
   return gain->edit_func;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 grid_api_data_func _grid_api_get_show_func(grid_api_s *ga)
 {
   _grid_api_internals *gain;
+    // Sanity check parameters.
   assert(ga);
   gain = _grid_api_get_internals(ga);
   if (!gain) return NULL;
+    // Return RETVAL
   return gain->show_func;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 grid_api_data_func _grid_api_get_delete_func(grid_api_s *ga)
 {
   _grid_api_internals *gain;
+    // Sanity check parameters.
   assert(ga);
   gain = _grid_api_get_internals(ga);
   if (!gain) return NULL;
+    // Return RETVAL
   return gain->delete_func;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 grid_api_data_func _grid_api_get_copy_func(grid_api_s *ga)
 {
   _grid_api_internals *gain;
+    // Sanity check parameters.
   assert(ga);
   gain = _grid_api_get_internals(ga);
   if (!gain) return NULL;
+    // Return RETVAL
   return gain->copy_func;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 grid_api_data_func _grid_api_get_paste_func(grid_api_s *ga)
 {
   _grid_api_internals *gain;
+    // Sanity check parameters.
   assert(ga);
   gain = _grid_api_get_internals(ga);
   if (!gain) return NULL;
+    // Return RETVAL
   return gain->paste_func;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 grid_api_s *grid_api_create(void)
 {
@@ -83,13 +308,28 @@ grid_api_s *grid_api_create(void)
 
   ((_grid_api_internals*)(s->_internals))->grid = grid_create();
 
+    // Return RETVAL
   return s;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void grid_api_destroy(grid_api_s *ga)
 {
   _grid_api_internals *gain;
 
+    // Sanity check parameters.
   assert(ga);
 
   gain = _grid_api_get_internals(ga);
@@ -98,10 +338,24 @@ void grid_api_destroy(grid_api_s *ga)
   free(ga);
 }
 
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
+
 void grid_api_set_free(grid_api_s *ga, grid_api_free_func f)
 {
   _grid_api_internals *gain;
 
+    // Sanity check parameters.
   assert(ga);
   assert(f);
 
@@ -109,10 +363,24 @@ void grid_api_set_free(grid_api_s *ga, grid_api_free_func f)
   grid_set_free(gain->grid, f);
 }
 
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
+
 void grid_api_set_edit(grid_api_s *ga, grid_api_data_func f)
 {
   _grid_api_internals *gain;
 
+    // Sanity check parameters.
   assert(ga);
   assert(f);
 
@@ -120,10 +388,24 @@ void grid_api_set_edit(grid_api_s *ga, grid_api_data_func f)
   gain->edit_func = f;
 }
 
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
+
 void grid_api_set_show(grid_api_s *ga, grid_api_data_func f)
 {
   _grid_api_internals *gain;
 
+    // Sanity check parameters.
   assert(ga);
   assert(f);
 
@@ -131,10 +413,24 @@ void grid_api_set_show(grid_api_s *ga, grid_api_data_func f)
   gain->show_func = f;
 }
 
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
+
 void grid_api_set_delete(grid_api_s *ga, grid_api_data_func f)
 {
   _grid_api_internals *gain;
 
+    // Sanity check parameters.
   assert(ga);
   assert(f);
 
@@ -142,10 +438,24 @@ void grid_api_set_delete(grid_api_s *ga, grid_api_data_func f)
   gain->delete_func = f;
 }
 
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
+
 void grid_api_set_copy(grid_api_s *ga, grid_api_data_func f)
 {
   _grid_api_internals *gain;
 
+    // Sanity check parameters.
   assert(ga);
   assert(f);
 
@@ -153,16 +463,43 @@ void grid_api_set_copy(grid_api_s *ga, grid_api_data_func f)
   gain->copy_func = f;
 }
 
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
+
 void grid_api_set_paste(grid_api_s *ga, grid_api_data_func f)
 {
   _grid_api_internals *gain;
 
+    // Sanity check parameters.
   assert(ga);
   assert(f);
 
   gain = _grid_api_get_internals(ga);
   gain->paste_func = f;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 grid_api_status_s *grid_api_do(grid_api_s *ga,
                                grid_api_command_t cmd,
@@ -177,6 +514,7 @@ grid_api_status_s *grid_api_do(grid_api_s *ga,
   vertex_s *v;
   grid_size_s *size;
 
+    // Sanity check parameters.
   assert(ga);
 
   memset(&stat, 0, sizeof(grid_api_status_s));
@@ -185,7 +523,8 @@ grid_api_status_s *grid_api_do(grid_api_s *ga,
   if (!grid_api)
   {
     stat.code = -1;
-    return &stat;
+      // Return RETVAL
+  return &stat;
   }
 
   switch (cmd)
@@ -385,6 +724,7 @@ grid_api_status_s *grid_api_do(grid_api_s *ga,
 
   stat.location = grid_get_location(grid_api->grid);
 
+    // Return RETVAL
   return &stat;
 }
 

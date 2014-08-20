@@ -1,9 +1,53 @@
+/*!
+    @file grid.c
+
+    @brief SOURCE_BRIEF
+
+    @timestamp Mon, 06 Jan 2014 15:17:36 +0000
+
+    @author Patrick Head  mailto:patrickhead@gmail.com
+
+    @copyright Copyright (C) 2014  Patrick Head
+
+    @license
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.@n
+    @n
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.@n
+    @n
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+  /*!
+
+    @file grid.c
+
+    SOURCE_BRIEF
+
+    SOURCE_DETAILS
+
+  */
+
+  // Required system headers
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 
+  // Project related headers
+
 #include "grid.h"
+
+  /*!
+    brief TYPEDEF_BRIEF
+  */
 
 typedef struct _cell
 {
@@ -14,12 +58,18 @@ typedef struct _cell
   void *payload;        // Payload
 } _cell;
 
+  /*!
+    brief TYPEDEF_BRIEF
+  */
+
 typedef struct
 {
   _cell *origin;               // Origin
   _cell *current;              // Current
   _cell *end;                  // End
+    /*! brief ELEMENT_BRIEF */
   grid_size_s *size;
+    /*! brief ELEMENT_BRIEF */
   vertex_s *location;
   grid_payload_free grid_pl_free;  // Memory de-allocation function.  Can be
                                    //   payload specific.
@@ -38,6 +88,19 @@ static _cell *_grid_find_by_value(grid_s *gs,
 static _cell *_grid_get_cell(grid_s *grid);
 
   // New creates a new grid
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
+
 grid_s *grid_create(void)
 {
   grid_s *g;
@@ -58,13 +121,28 @@ grid_s *grid_create(void)
   vertex_set_x(((_grid_internals *)(g->_internals))->location, 0);
   vertex_set_y(((_grid_internals *)(g->_internals))->location, 0);
 
+    // Return RETVAL
   return g;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void grid_free(grid_s *grid)
 {
   _grid_internals *gin;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -83,10 +161,24 @@ void grid_free(grid_s *grid)
 
   // Free removes all the items from the grid, and destroys all the cell
   // payloads.
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
+
 void grid_destroy(grid_s *grid)
 {
   _grid_internals *gin;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -103,17 +195,45 @@ void grid_destroy(grid_s *grid)
   free(grid);
 }
 
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
+
 void grid_set_free(grid_s *grid, grid_payload_free func)
 {
   _grid_internals *gin;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
   if (gin) gin->grid_pl_free = func;
 
+    // Return RETVAL
   return;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void grid_set_size(grid_s *grid, grid_size_s *gs)
 {
@@ -122,6 +242,7 @@ void grid_set_size(grid_s *grid, grid_size_s *gs)
   int width, height;
   int i;
 
+    // Sanity check parameters.
   assert(grid);
   assert(gs);
 
@@ -150,8 +271,22 @@ void grid_set_size(grid_s *grid, grid_size_s *gs)
   for (i = width - 1; cols < (i + 1); --i)
     grid_destroy_column(grid, -1);
 
+    // Return RETVAL
   return;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void grid_set_size_free_only(grid_s *grid, grid_size_s *gs)
 {
@@ -160,6 +295,7 @@ void grid_set_size_free_only(grid_s *grid, grid_size_s *gs)
   int width, height;
   int i;
 
+    // Sanity check parameters.
   assert(grid);
   assert(gs);
 
@@ -188,32 +324,76 @@ void grid_set_size_free_only(grid_s *grid, grid_size_s *gs)
   for (i = width - 1; cols < (i + 1); --i)
     grid_free_column(grid, -1);
 
+    // Return RETVAL
   return;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 grid_size_s *grid_get_size(grid_s *grid)
 {
   _grid_internals *gin;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
   if (!gin) return NULL;
 
+    // Return RETVAL
   return gin->size;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 vertex_s *grid_get_location(grid_s *grid)
 {
   _grid_internals *gin;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
   if (!gin) return NULL;
 
+    // Return RETVAL
   return gin->location;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void grid_create_row(grid_s *grid, int row)
 {
@@ -226,6 +406,7 @@ void grid_create_row(grid_s *grid, int row)
   _cell *ncell; // A new cell
   _cell *pcell; // Tracks most previous cell created
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -318,8 +499,22 @@ void grid_create_row(grid_s *grid, int row)
     }
   }
 
+    // Return RETVAL
   return;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void grid_create_column(grid_s *grid, int col)
 {
@@ -332,6 +527,7 @@ void grid_create_column(grid_s *grid, int col)
   _cell *ncell; // A new cell
   _cell *pcell; // Tracks most previous cell created
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -424,8 +620,22 @@ void grid_create_column(grid_s *grid, int col)
     }
   }
 
+    // Return RETVAL
   return;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void grid_free_row(grid_s *grid, int row)
 {
@@ -436,6 +646,7 @@ void grid_free_row(grid_s *grid, int row)
   _cell *e;
   int i;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -473,8 +684,22 @@ void grid_free_row(grid_s *grid, int row)
   if (row == (chgt - 1)) gin->end = e;
   if (!gin->end) grid_size_set_width(gin->size, 0);
 
+    // Return RETVAL
   return;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void grid_free_column(grid_s *grid, int col)
 {
@@ -485,6 +710,7 @@ void grid_free_column(grid_s *grid, int col)
   _cell *e;
   int i;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -522,8 +748,22 @@ void grid_free_column(grid_s *grid, int col)
   if (col == (cwid - 1)) gin->end = e;
   if (!gin->end) grid_size_set_height(gin->size, 0);
 
+    // Return RETVAL
   return;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void grid_destroy_row(grid_s *grid, int row)
 {
@@ -535,6 +775,7 @@ void grid_destroy_row(grid_s *grid, int row)
   grid_payload_free fpl;
   int i;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -574,8 +815,22 @@ void grid_destroy_row(grid_s *grid, int row)
   if (row == (chgt - 1)) gin->end = e;
   if (!gin->end) grid_size_set_width(gin->size, 0);
 
+    // Return RETVAL
   return;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void grid_destroy_column(grid_s *grid, int col)
 {
@@ -587,6 +842,7 @@ void grid_destroy_column(grid_s *grid, int col)
   grid_payload_free fpl;
   int i;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -626,14 +882,29 @@ void grid_destroy_column(grid_s *grid, int col)
   if (col == (cwid - 1)) gin->end = e;
   if (!gin->end) grid_size_set_height(gin->size, 0);
 
+    // Return RETVAL
   return;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void grid_clear_cell(grid_s *grid)
 {
   _grid_internals *gin;
   grid_payload_free fpl;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -645,25 +916,55 @@ void grid_clear_cell(grid_s *grid)
 
   gin->current->payload = NULL;
 
+    // Return RETVAL
   return;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void *grid_get_cell(grid_s *grid)
 {
   _cell *cell;
 
+    // Sanity check parameters.
   assert(grid);
 
   cell = _grid_get_cell(grid);
   if (!cell) return NULL;
 
+    // Return RETVAL
   return _grid_get_payload(cell);
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void grid_set_cell(grid_s *grid, void *payload)
 {
   _grid_internals *gin;
   
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -674,11 +975,25 @@ void grid_set_cell(grid_s *grid, void *payload)
   gin->current->payload = payload;
 }
 
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
+
 void *grid_find_by_reference(grid_s *grid, void *reference)
 {
   _grid_internals *gin;
   _cell *c;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -688,11 +1003,26 @@ void *grid_find_by_reference(grid_s *grid, void *reference)
   if (c)
   {
     gin->current = c;
-    return c;
+      // Return RETVAL
+  return c;
   }
 
+    // Return RETVAL
   return NULL;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void *grid_find_by_value(grid_s *grid,
                          void *value,
@@ -701,6 +1031,7 @@ void *grid_find_by_value(grid_s *grid,
   _grid_internals *gin;
   _cell *c;
 
+    // Sanity check parameters.
   assert(grid);
   assert(value);
   assert(func);
@@ -712,17 +1043,33 @@ void *grid_find_by_value(grid_s *grid,
   if (c)
   {
     gin->current = c;
-    return c;
+      // Return RETVAL
+  return c;
   }
 
+    // Return RETVAL
   return NULL;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void *grid_origin(grid_s *grid)
 {
   _grid_internals *gin;
   void *pl;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -734,14 +1081,29 @@ void *grid_origin(grid_s *grid)
   vertex_set_y(gin->location, 0);
   vertex_set_x(gin->location, 0);
 
+    // Return RETVAL
   return pl;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void *grid_current(grid_s *grid)
 {
   _grid_internals *gin;
   void *pl;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -749,14 +1111,29 @@ void *grid_current(grid_s *grid)
 
   pl = _grid_get_payload(gin->current);
 
+    // Return RETVAL
   return pl;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void *grid_end(grid_s *grid)
 {
   _grid_internals *gin;
   void *pl;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -768,8 +1145,22 @@ void *grid_end(grid_s *grid)
   vertex_set_y(gin->location, grid_size_get_height(gin->size) - 1);
   vertex_set_x(gin->location, grid_size_get_width(gin->size) - 1);
 
+    // Return RETVAL
   return pl;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void *grid_left(grid_s *grid)
 {
@@ -777,6 +1168,7 @@ void *grid_left(grid_s *grid)
   _cell *c;
   void *pl;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -792,8 +1184,22 @@ void *grid_left(grid_s *grid)
   gin->current = c->left;
   vertex_set_x(gin->location, vertex_get_x(gin->location) - 1);
 
+    // Return RETVAL
   return pl;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void *grid_right(grid_s *grid)
 {
@@ -801,6 +1207,7 @@ void *grid_right(grid_s *grid)
   _cell *c;
   void *pl;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -816,8 +1223,22 @@ void *grid_right(grid_s *grid)
   gin->current = c->right;
   vertex_set_x(gin->location, vertex_get_x(gin->location) + 1);
 
+    // Return RETVAL
   return pl;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void *grid_up(grid_s *grid)
 {
@@ -825,6 +1246,7 @@ void *grid_up(grid_s *grid)
   _cell *c;
   void *pl;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -840,8 +1262,22 @@ void *grid_up(grid_s *grid)
   gin->current = c->up;
   vertex_set_y(gin->location, vertex_get_y(gin->location) - 1);
 
+    // Return RETVAL
   return pl;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void *grid_down(grid_s *grid)
 {
@@ -849,6 +1285,7 @@ void *grid_down(grid_s *grid)
   _cell *c;
   void *pl;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
@@ -864,8 +1301,22 @@ void *grid_down(grid_s *grid)
   gin->current = c->down;
   vertex_set_y(gin->location, vertex_get_y(gin->location) + 1);
 
+    // Return RETVAL
   return pl;
 }
+
+  /*!
+
+     @brief FUNCTION_BRIEF
+
+     FUNCTION_DETAILS
+
+     @param PARMNAME    PARM_DESCRIPTION
+
+     @retval "RETTYPE" success
+     @retval RETVAL    failure
+
+  */
 
 void *grid_goto(grid_s *grid, int row, int col)
 {
@@ -875,6 +1326,7 @@ void *grid_goto(grid_s *grid, int row, int col)
   int i;
   int dir;
 
+    // Sanity check parameters.
   assert(grid);
 
   size = grid_get_size(grid);
@@ -904,6 +1356,7 @@ void *grid_goto(grid_s *grid, int row, int col)
   vertex_set_y(gin->location, row);
   vertex_set_x(gin->location, col);
 
+    // Return RETVAL
   return _grid_get_payload(c);
 }
 
@@ -918,11 +1371,13 @@ static _cell *_cell_new(void *pl)
 
   c->payload = pl;
 
+    // Return RETVAL
   return c;
 }
 
 static void _cell_free(_cell *c, grid_payload_free fpl)
 {
+    // Sanity check parameters.
   assert(c);
   if (fpl) fpl(c->payload);
   free(c);
@@ -932,23 +1387,29 @@ static grid_payload_free _grid_get_pl_free(grid_s *grid)
 {
   _grid_internals *gin;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
   if (!gin) return NULL;
 
+    // Return RETVAL
   return gin->grid_pl_free;
 }
 
 static _grid_internals *_grid_get_internals(grid_s *grid)
 {
+    // Sanity check parameters.
   assert(grid);
+    // Return RETVAL
   return (_grid_internals*)grid->_internals;
 }
 
 static void *_grid_get_payload(_cell *c)
 {
+    // Sanity check parameters.
   assert(c);
+    // Return RETVAL
   return c->payload;
 }
 
@@ -959,6 +1420,7 @@ static _cell *_grid_find_by_reference(grid_s *grid, void *pl)
   _grid_internals *gin;
   int x, y;
 
+    // Sanity check parameters.
   assert(grid);
   assert(pl);
 
@@ -972,10 +1434,12 @@ static _cell *_grid_find_by_reference(grid_s *grid, void *pl)
       {
         vertex_set_y(gin->location, y);
         vertex_set_x(gin->location, x);
-        return c2;
+          // Return RETVAL
+  return c2;
       }
   }
 
+    // Return RETVAL
   return NULL;
 }
 
@@ -988,6 +1452,7 @@ static _cell *_grid_find_by_value(grid_s *grid,
   _grid_internals *gin;
   int x, y;
 
+    // Sanity check parameters.
   assert(grid);
   assert(pl);
   assert(cf);
@@ -1002,10 +1467,12 @@ static _cell *_grid_find_by_value(grid_s *grid,
       {
         vertex_set_y(gin->location, y);
         vertex_set_x(gin->location, x);
-        return c2;
+          // Return RETVAL
+  return c2;
       }
   }
 
+    // Return RETVAL
   return NULL;
 }
 
@@ -1013,11 +1480,13 @@ static _cell *_grid_get_cell(grid_s *grid)
 {
   _grid_internals *gin;
 
+    // Sanity check parameters.
   assert(grid);
 
   gin = _grid_get_internals(grid);
   if (!gin) return NULL;
 
+    // Return RETVAL
   return gin->current;
 }
 
