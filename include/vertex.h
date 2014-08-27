@@ -1,7 +1,7 @@
 /*!
     @file vertex.h
 
-    @brief HEADER_BRIEF
+    @brief Header file for vertex data
 
     @timestamp Tue, 19 Aug 2014 05:12:38 +0000
 
@@ -28,9 +28,12 @@
 
     @file vertex.h
 
-    HEADER_BRIEF
+    Header file for vertex data structure management
 
-    HEADER_DETAILS
+    As defined herein, a vertex is a structure containing data for a point in
+    3 dimensional space.  A vertex also contains an options tag, which is
+    intended to be used either as a distinct id for the vertex, or as a
+    structure element name reference in a containing parent structure.
 
   */
 
@@ -38,28 +41,36 @@
 #define VERTEX_H
 
   /*!
-    brief TYPEDEF_BRIEF
+    brief Vertex data structure
   */
 
 typedef struct
 {
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Unique identifier for vertex */
   char *tag;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief X ordinate of vertex */
   double x;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Y ordinate of vertex */
   double y;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Z ordinate of vertex */
   double z;
 } vertex_s;
+
+  // Vertex function prototypes
+
+    // Structure management functions
 
 vertex_s *vertex_create(void);
 void vertex_destroy_void(void *v);
 void vertex_destroy(vertex_s *v);
 vertex_s *vertex_copy(vertex_s *v);
 
+    // Comprehensive getter/setter
+
 void vertex_set(vertex_s *v, char *tag, double x, double y, double z);
 void vertex_get(vertex_s *v, char **tag, double *x, double *y, double *z);
+
+    // Individual element getters/setters
 
 void vertex_set_tag(vertex_s *v, char *tag);
 char *vertex_get_tag(vertex_s *v);
@@ -70,8 +81,9 @@ double vertex_get_y(vertex_s *v);
 void vertex_set_z(vertex_s *v, double z);
 double vertex_get_z(vertex_s *v);
 
+   // Conversion functions
+
 vertex_s *str2vertex(char *s);
 char *vertex2str(vertex_s *v);
 
 #endif // VERTEX
-

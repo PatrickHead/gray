@@ -1,7 +1,7 @@
 /*!
     @file vertex-xml.h
 
-    @brief HEADER_BRIEF
+    @brief Header file for vertex XML data
 
     @timestamp Tue, 19 Aug 2014 05:12:38 +0000
 
@@ -28,22 +28,43 @@
 
     @file vertex-xml.h
 
-    HEADER_BRIEF
+    Header file for managing vertex data to/from XML format.
 
-    HEADER_DETAILS
+    XML Utility functions for converting vertex data to/from XML format.
+
+    Also includes a stream sieve function for building filter pipe lines on
+    STDIO that can capture or edit existing vertex data in XML format.
+
+    NOTE:  The user is responsible for including at least <libxml/tree.h> in
+           any source that includes this header.
 
   */
 
 #ifndef VERTEX_XML_H
 #define VERTEX_XML_H
 
+  // Base type include file(s)
+
 #include "vertex.h"
+
+  // Vertex XML function prototypes
+
+    // Functions to convert to XML
 
 xmlDocPtr vertex_to_xml_doc(vertex_s *v);
 xmlNodePtr vertex_to_xml_node(vertex_s *v);
+
+    // Utility functions
+
 xmlNodePtr vertex_root_node(xmlDocPtr doc);
+
+    // Functions to convert from XML
+
 vertex_s *vertex_from_xml_doc(xmlDocPtr doc);
 vertex_s *vertex_from_xml_node(xmlNodePtr node);
+
+    // Filter functions
+
 vertex_s *vertex_sieve(FILE *infile, FILE *outfile);
 
 #endif // VERTEX_XML_H

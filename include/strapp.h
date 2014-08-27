@@ -1,7 +1,7 @@
 /*!
     @file strapp.h
 
-    @brief HEADER_BRIEF
+    @brief Header file for strapp string function
 
     @timestamp Tue, 19 Aug 2014 05:12:38 +0000
 
@@ -28,14 +28,22 @@
 
     @file strapp.h
 
-    HEADER_BRIEF
+    Header file for strapp string function
 
-    HEADER_DETAILS
+    strapp() is a function designed to enhance and extend the venerable clib
+    str* functions.   strapp() stands for "string append", and will append a
+    null terminated string to another null terminated string, managing all
+    memory allocation/re-allocation as needed.   strapp() can also create
+    a new string allocation.  strapp() is intended to serve as both a useful
+    addition to the str*() function libraries, and to provide a possibly
+    safer mechanism for handling strings in a generic manner.
 
   */
 
 #ifndef STRAPP_H
 #define STRAPP_H
+
+  // strapp function prototype
 
 char *strapp(char *s, char *a);
 

@@ -1,7 +1,7 @@
 /*!
     @file grid-xml.h
 
-    @brief HEADER_BRIEF
+    @brief Header file for grid (matrix/spreadsheet) XML data
 
     @timestamp Tue, 19 Aug 2014 05:12:38 +0000
 
@@ -28,38 +28,50 @@
 
     @file grid-xml.h
 
-    HEADER_BRIEF
+    Header file for managing grid data to/from XML format.
 
-    HEADER_DETAILS
+    XML Utility functions for converting grid data to/from XML format.
+
+    Also includes a stream sieve function for building filter pipe lines on
+    STDIO that can capture or edit existing color data in XML format.
+
+    NOTE:  The user is responsible for including at least <libxml/tree.h> in
+           any source that includes this header.
 
   */
 
 #ifndef GRID_XML_H
 #define GRID_XML_H
 
+  // Base type include file(s)
+
 #include "grid.h"
 
   /*!
-    brief TYPEDEF_BRIEF
+    brief Prototypes for user defined XML data conversion functions
   */
 
 typedef xmlNodePtr (*grid_cell_to_xml_node)(void *payload);
-  /*!
-    brief TYPEDEF_BRIEF
-  */
-
 typedef void *(*grid_cell_from_xml_node)(xmlNodePtr node);
+
+  // grid-xml function prototypes
+
+    // Functions to convert to XML
 
 xmlDocPtr grid_to_xml_doc(grid_s *g, grid_cell_to_xml_node func);
 xmlNodePtr grid_to_xml_node(grid_s *g, grid_cell_to_xml_node func);
 
+    // Utility functions
+
 xmlNodePtr grid_root_node(xmlDocPtr doc);
+
+    // Functions to convert from XML
 
 grid_s *grid_from_xml_doc(xmlDocPtr doc, grid_cell_from_xml_node func);
 grid_s *grid_from_xml_node(xmlNodePtr node, grid_cell_from_xml_node func);
 
+    // Filter functions
+
 grid_s *grid_sieve(FILE *infile, FILE *outfile);
 
 #endif // GRID_XML_H
-
-

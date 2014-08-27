@@ -1,7 +1,7 @@
 /*!
     @file vertices-xml.h
 
-    @brief HEADER_BRIEF
+    @brief Header file for list of vertices XML data
 
     @timestamp Tue, 19 Aug 2014 05:12:38 +0000
 
@@ -28,24 +28,46 @@
 
     @file vertices-xml.h
 
-    HEADER_BRIEF
+    Header file for managing list of vertices data to/from XML format.
 
-    HEADER_DETAILS
+    XML Utility functions for converting list of vertices data to/from
+    XML format.
+
+    Also includes a stream sieve function for building filter pipe lines on
+    STDIO that can capture or edit existing vertices data in XML format.
+
+    NOTE:  The user is responsible for including at least <libxml/tree.h> in
+           any source that includes this header.
 
   */
 
 #ifndef VERTICES_XML_H
 #define VERTICES_XML_H
 
-#include "vertices.h"
+  // Base type include file(s)
 
+#include "vertices.h"
 #include "vertex-xml.h"
+
+  // Vertices XML function prototypes
+
+
+    // Functions to convert to XML
 
 xmlDocPtr vertices_to_xml_doc(vertices_s *ls);
 xmlNodePtr vertices_to_xml_node(vertices_s *ls);
+
+    // Utility functions
+
 xmlNodePtr vertices_root_node(xmlDocPtr doc);
+
+    // Functions to convert from XML
+
 vertices_s *vertices_from_xml_doc(xmlDocPtr doc);
 vertices_s *vertices_from_xml_node(xmlNodePtr node);
+
+    // Filter functions
+
 vertices_s *vertices_sieve(FILE *infile, FILE *outfile);
 
 #endif // VERTICES_XML_H

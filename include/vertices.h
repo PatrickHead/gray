@@ -1,7 +1,7 @@
 /*!
     @file vertices.h
 
-    @brief HEADER_BRIEF
+    @brief Header file for list of vertices data
 
     @timestamp Tue, 19 Aug 2014 05:12:38 +0000
 
@@ -28,9 +28,11 @@
 
     @file vertices.h
 
-    HEADER_BRIEF
+    Header file for list of vertices (see vertex.h) data management functions
 
-    HEADER_DETAILS
+    This module provides functions for managing a list of vertex data
+    structures.  Base structure management functions are provided, as well
+    as functions to add to a list, and copy an entire list.
 
   */
 
@@ -41,18 +43,25 @@
 #include "vertex.h"
 
   /*!
-    brief TYPEDEF_BRIEF
+    brief Vertices data structure
   */
 
 typedef struct
 {
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Pointer to list of vertices */
   list_s *vertices;
 } vertices_s;
+
+  // Vertices function prototypes
+
+    // Structure management functions
 
 vertices_s *vertices_create(void);
 void vertices_destroy(vertices_s *vs);
 vertices_s *vertices_copy(vertices_s *vs);
+
+   // Element management functions
+
 void vertices_add_vertex(vertices_s *vs, vertex_s *v);
 
 #endif // VERTICES_H

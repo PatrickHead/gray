@@ -1,7 +1,7 @@
 /*!
     @file list.h
 
-    @brief HEADER_BRIEF
+    @brief Header file for list data
 
     @timestamp Tue, 19 Aug 2014 05:12:38 +0000
 
@@ -28,28 +28,29 @@
 
     @file list.h
 
-    HEADER_BRIEF
+    Header file for linked list structure data management
 
-    HEADER_DETAILS
+    This module provides a generic management interface for the classic double
+    linked list data structure.
 
+    In addition to the global list management functions, functions are also
+    provided to insert/delete/change list elements, search for list items by
+    reference and data value.  Also, functions are provided for queue and stack
+    operations.
   */
 
 #ifndef LIST_H
 #define LIST_H
 
   /*!
-    brief TYPEDEF_BRIEF
+    brief Prototypes for user defined data free/compare functions
   */
 
 typedef void (*list_payload_free)(void * const payload);
-  /*!
-    brief TYPEDEF_BRIEF
-  */
-
 typedef int (*list_payload_compare)(void * const pl1, void * const pl2);
 
   /*!
-    brief TYPEDEF_BRIEF
+    brief "Whence" type for insert/delete operations
   */
 
 typedef enum
@@ -60,14 +61,18 @@ typedef enum
 } list_whence_t;
 
   /*!
-    brief TYPEDEF_BRIEF
+    brief List data structure
   */
 
 typedef struct
 {
-    /*! brief ELEMENT_BRIEF */
+    /*! brief Pointer to internal data (encapsulates interface) */
   void *internals;
 } list_s;
+
+  // List function prototypes
+
+    // Structure management functions
 
 list_s *list_create(void);
 void list_destroy(list_s * const list);
@@ -75,15 +80,25 @@ void list_free(list_s * const list);
 void list_set_free(list_s * const list, list_payload_free func);
 int list_len(list_s * const list);
 
-void list_insert(list_s * const list, void * const payload, void * const whence);
+    // Element operation functions
+
+void list_insert(list_s * const list,
+                 void * const payload,
+                 void * const whence);
 void list_delete(list_s * const list, void * const whence);
 void *list_remove(list_s * const list, void * const whence);
-void list_replace(list_s * const list, void * const payload, void * const whence);
+void list_replace(list_s * const list,
+                  void * const payload,
+                  void * const whence);
+
+    // Element search functions
 
 void *list_find_by_reference(list_s * const list, void * const reference);
 void *list_find_by_value(list_s * const list,
                          void * const value,
                          list_payload_compare func);
+
+    // Element position functions
 
 void *list_head(list_s * const list);
 void *list_curr(list_s * const list);
@@ -91,8 +106,13 @@ void *list_tail(list_s * const list);
 void *list_next(list_s * const list);
 void *list_prev(list_s * const list);
 
+    // FIFO queue functions
+
 void list_queue(list_s * const list, void * const payload);
 void *list_dequeue(list_s * const list);
+
+    // Stack (LIFO queue) functions
+
 void list_push(list_s * const list, void * const payload);
 #define list_pop(l) list_dequeue(l)
 

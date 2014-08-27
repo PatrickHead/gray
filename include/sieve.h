@@ -1,7 +1,7 @@
 /*!
     @file sieve.h
 
-    @brief HEADER_BRIEF
+    @brief Header file for sieve type filter mode management
 
     @timestamp Tue, 19 Aug 2014 05:12:38 +0000
 
@@ -28,9 +28,17 @@
 
     @file sieve.h
 
-    HEADER_BRIEF
+    Header file for sieve type filter mode management
 
-    HEADER_DETAILS
+    A sieve is a special type of STDIO filter mechanism.  A sieve uses the
+    doc-list facility to manage a list of documents parts parsed from any STDIO
+    stream, and to mark those of interest to the user.  This module is for
+    management the mode of the sieve, either passthru, or edit.  While it is
+    entirely up to the user to determine for what the modes will be used, the
+    intent is for edit mode to pick the first "kept" document and make changes
+    to it, then pass it on to the STDIO output stream, while passthru mode is
+    intended to simply pass all incoming document parts on to the output stream,
+    but optionally adding additional data (document parts) to the stream.
 
   */
 
@@ -38,7 +46,7 @@
 #define SIEVE_H
 
   /*!
-    brief TYPEDEF_BRIEF
+    brief Sieve mode type
   */
 
 typedef enum
@@ -47,8 +55,14 @@ typedef enum
   sieve_process_mode_type_edit
 } sieve_process_mode_t;
 
+  // Sieve function prototypes
+
+    // Sieve mode getter/setter
+
 void sieve_set_process_mode(sieve_process_mode_t m);
 sieve_process_mode_t sieve_get_process_mode(void);
+
+    // Type name conversion functions
 
 sieve_process_mode_t str2sieve_process_mode_type(char *s);
 char *sieve_process_mode_type2str(sieve_process_mode_t m);

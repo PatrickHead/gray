@@ -48,11 +48,22 @@
 
   // Color XML function prototypes
 
+    // Functions to convert to XML
+
 xmlDocPtr color_to_xml_doc(color_s *c);
 xmlNodePtr color_to_xml_node(color_s *c);
+
+    // Utility functions
+
 xmlNodePtr color_root_node(xmlDocPtr doc);
+
+    // Functions to convert from XML
+
 color_s *color_from_xml_doc(xmlDocPtr doc);
 color_s *color_from_xml_node(xmlNodePtr node);
+
+    // Filter functions
+
 color_s *color_sieve(FILE *infile, FILE *outfile);
 
 #endif // COLOR_XML_H

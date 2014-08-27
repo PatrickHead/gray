@@ -1,7 +1,7 @@
 /*!
     @file grid-size.h
 
-    @brief HEADER_BRIEF
+    @brief Header file for grid_size data
 
     @timestamp Tue, 19 Aug 2014 05:12:38 +0000
 
@@ -28,9 +28,9 @@
 
     @file grid-size.h
 
-    HEADER_BRIEF
+    Header file for grid_size data, a support structure for data.
 
-    HEADER_DETAILS
+    grid_size is a simple structure describing the width and height of a grid
 
   */
 
@@ -43,25 +43,35 @@
 
 typedef struct
 {
-    /*! brief ELEMENT_BRIEF */
+    /*! brief width of grid */
   int width;
-    /*! brief ELEMENT_BRIEF */
+    /*! brief height of grid */
   int height;
 } grid_size_s;
+
+  // grid_size function prototypes
+
+    // Structure management functions 
 
 grid_size_s *grid_size_create(void);
 void grid_size_destroy_void(void *v);
 void grid_size_destroy(grid_size_s *gs);
 grid_size_s *grid_size_copy(grid_size_s *gs);
 
+    // Comprehensive getter/setter
+
 void grid_size_set(grid_size_s *gs, int width, int height);
 void grid_size_get(grid_size_s *gs, int *width, int *height);
+
+    // Individual element getters/setters
 
 int grid_size_get_width(grid_size_s *gs);
 void grid_size_set_width(grid_size_s *gs, int width);
 
 int grid_size_get_height(grid_size_s *gs);
 void grid_size_set_height(grid_size_s *gs, int height);
+
+    // Conversion functions
 
 char *grid_size2str(grid_size_s *gs);
 grid_size_s *str2grid_size(char *s);

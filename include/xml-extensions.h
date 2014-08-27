@@ -1,7 +1,7 @@
 /*!
     @file xml-extensions.h
 
-    @brief HEADER_BRIEF
+    @brief Header file for libxml2 extensions
 
     @timestamp Tue, 19 Aug 2014 05:12:38 +0000
 
@@ -28,14 +28,21 @@
 
     @file xml-extensions.h
 
-    HEADER_BRIEF
+    Header file for libxml2 extensions
 
-    HEADER_DETAILS
+    Contains functions to extend the function library supplied in libxml2
+    package.
+
+    Currently contains:
+      xmlDocFormatDumpEnc() - save an entire XML document with formatting
+                              and encoding information.
 
   */
 
 #ifndef XML_EXTENSIONS_H
 #define XML_EXTENSIONS_H
+
+  // XML extension function prototypes
 
 void xmlDocFormatDumpEnc(FILE *f,
                          xmlDocPtr doc,

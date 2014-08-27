@@ -1,7 +1,7 @@
 /*!
     @file reference.h
 
-    @brief HEADER_BRIEF
+    @brief Header file for persistent reference id management
 
     @timestamp Tue, 19 Aug 2014 05:12:38 +0000
 
@@ -28,14 +28,16 @@
 
     @file reference.h
 
-    HEADER_BRIEF
+    Header file for persistent reference id management
 
-    HEADER_DETAILS
+    A simple, per user, persistent object ID management facility
 
   */
 
 #ifndef REFERENCE_H
 #define REFERENCE_H
+
+  // Reference functions prototypes
 
 int reference_new(void);
 
