@@ -1,9 +1,9 @@
 /*!
     @file color-xml.c
 
-    @brief SOURCE_BRIEF
+    @brief Source file for color XML data management routines
 
-    @timestamp Wed, 20 Aug 2014 03:18:03 +0000
+    @timestamp Fri, 05 Sep 2014 09:08:31 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,9 +28,12 @@
 
     @file color-xml.c
 
-    SOURCE_BRIEF
+    Source file for managing color data to/from XML format.
 
-    SOURCE_DETAILS
+    XML Utility functions for converting color data to/from XML format.
+
+    Also includes a stream sieve function for building filter pipe lines on
+    STDIO that can capture or edit existing color data in XML format.
 
   */
 
@@ -51,18 +54,20 @@
 #include "sieve.h"
 #include "color-xml.h"
 
+  // Common constants
+
 #define MAX_SN 40
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert color data to XML document
 
-     FUNCTION_DETAILS
+     Converts data in color structure to XML document format.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param c    pointer to color data structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "xmlDocPtr" success
+     @retval NULL    failure
 
   */
 
@@ -75,25 +80,31 @@ xmlDocPtr color_to_xml_doc(color_s *c)
   assert(c);
 
   doc = xmlNewDoc(BAD_CAST "1.0");
+  if (!doc) return NULL;
 
   root = color_to_xml_node(c);
+  if (!doc)
+  {
+    xmlFreeDoc(doc);
+    return NULL;
+  }
 
   xmlDocSetRootElement(doc, root);
 
-    // Return RETVAL
+    // Return pointer to xmlDoc
   return doc;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert color data to XML node
 
-     FUNCTION_DETAILS
+     Converts data in color structure to XML node format.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param c    pointer to color data structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "xmlNodePtr" success
+     @retval NULL    failure
 
   */
 
@@ -123,20 +134,20 @@ xmlNodePtr color_to_xml_node(color_s *c)
   snprintf(sn, MAX_SN, "%f", c->a);
   xmlNewProp(node, BAD_CAST "a", BAD_CAST sn);
 
-    // Return RETVAL
+    // Return pointer to xmlNode
   return node;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Returns root node of XML document containing color XML data
 
-     FUNCTION_DETAILS
+     Finds and returns the XML root node of a document containin color data.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param doc    pointer to xmlDoc
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "xmlNodePtr" success
+     @retval NULL    failure
 
   */
 
@@ -144,20 +155,20 @@ xmlNodePtr color_root_node(xmlDocPtr doc)
 {
     // Sanity check parameters.
   assert(doc);
-    // Return RETVAL
+    // Return pointer to xmlNode
   return xmlDocGetRootElement(doc);
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert XML color document to color data structure
 
-     FUNCTION_DETAILS
+     Converts an XML document containing color data to data structure
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param doc    pointer to xmlDoc
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "color_s *" success
+     @retval NULL    failure
 
   */
 
@@ -169,21 +180,22 @@ color_s *color_from_xml_doc(xmlDocPtr doc)
   assert(doc);
 
   root = color_root_node(doc);
+  if (!root) return NULL;
 
-    // Return RETVAL
+    // Return pointer to color structure
   return color_from_xml_node(root);
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert XML color node to color data structure
 
-     FUNCTION_DETAILS
+     Converts an XML node containing color data to data structure
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param doc    pointer to xmlNode
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "color_s *" success
+     @retval NULL    failure
 
   */
 
@@ -195,45 +207,46 @@ color_s *color_from_xml_node(xmlNodePtr node)
     // Sanity check parameters.
   assert(node);
 
+  if (strcmp((char*)node->name, "color")) return NULL;
+
   c = color_create();
   if (!c) return NULL;
 
-  if (strcmp((char*)node->name, "color")) return c;
-
   s = (char *)xmlGetProp(node, BAD_CAST "tag");
-  if (s)
-    c->tag = strdup(s);
+  if (s) c->tag = strdup(s);
   
   s = (char *)xmlGetProp(node, BAD_CAST "r");
-  if (s)
-    c->r = strtod(s, NULL);
+  if (s) c->r = strtod(s, NULL);
   
   s = (char *)xmlGetProp(node, BAD_CAST "g");
-  if (s)
-    c->g = strtod(s, NULL);
+  if (s) c->g = strtod(s, NULL);
   
   s = (char *)xmlGetProp(node, BAD_CAST "b");
-  if (s)
-    c->b = strtod(s, NULL);
+  if (s) c->b = strtod(s, NULL);
   
   s = (char *)xmlGetProp(node, BAD_CAST "a");
-  if (s)
-    c->a = strtod(s, NULL);
+  if (s) c->a = strtod(s, NULL);
   
-    // Return RETVAL
+    // Return pointer to color structure
   return c;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief STDIO sieve for handling XML color data in data stream
 
-     FUNCTION_DETAILS
+     Sieve which captures the first XML document in input stream that contains
+     color data when sieve process mode is set to "edit".  All other XML
+     documents in stream are simply emitted back to stream in the order that
+     they appear.   This includes any subsequent documents containing color
+     data, and also the first document containing color data if the sieve
+     process mode is set to "passthru".
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param infile    "FILE *" to input stream
+     @param outfile   "FILE *" to output stream
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "color_s *" success
+     @retval NULL    failure or no matching document
 
   */
 
@@ -246,15 +259,25 @@ color_s *color_sieve(FILE *infile, FILE *outfile)
   xmlNodePtr root;
   int have_one = 0;
 
+    // No processing is done, if input stream is not provided, or not open
+
   if (!infile) return NULL;
+
+    // Create document list from input stream.  Each document is defined as
+    // any xml document, and a matching document is any document containing
+    // a "color" element
 
   dl = doc_list_create(infile,
                     "<?xml[^<]*?>",
                     "<color[^<]*/>");
   if (!dl) return NULL;
 
+    // Create base color structure
+
   color = color_create();
   if (!color) return NULL;
+
+    // Set default color to "black"
 
   color_black(color);
 
@@ -270,6 +293,7 @@ color_s *color_sieve(FILE *infile, FILE *outfile)
       {
         if (!strcmp((char *)root->name, "color"))
         {
+            // Capture first matching document, if in edit mode
           if (!have_one &&
               (sieve_get_process_mode() == sieve_process_mode_type_edit))
           {
@@ -299,7 +323,7 @@ color_s *color_sieve(FILE *infile, FILE *outfile)
     }
   }
 
-    // Return RETVAL
+    // Return pointer to color structure, if any
   return color;
 }
 
