@@ -1,7 +1,7 @@
 /*!
     @file color.c
 
-    @brief SOURCE_BRIEF
+    @brief Source file for color data management routines
 
     @timestamp Wed, 20 Aug 2014 03:18:03 +0000
 
@@ -28,9 +28,18 @@
 
     @file color.c
 
-    SOURCE_BRIEF
+    Source file for color data structure management routines
 
-    SOURCE_DETAILS
+    A simple color data storage and management system.  The color can have
+    a unique name, or tag.  This name can be used to identify the color itself
+    or to identify the purpose of the color, such as the name of a structure
+    or XML element.
+
+    Each color is stored in the standard RGBA (Red-Green-Blue-Alpha Channel)
+    format.  All color values are stored as double precision floats.  The RGB
+    values can be in the range of 0.0 through 255.0.  The Alpha Channel value
+    an be in the range of 0.0 through 1.0.  When Alpha is 0.0, the color is
+    considered to be 'none'.
 
   */
 
@@ -47,14 +56,14 @@
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Create a color structure
 
-     FUNCTION_DETAILS
+     Allocates memory for and inititalizes a color structure.
 
      @param PARMNAME    PARM_DESCRIPTION
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "color_s *" success
+     @retval NULL    failure
 
   */
 
@@ -63,24 +72,25 @@ color_s *color_create(void)
   color_s *c;
 
   c = (color_s *)malloc(sizeof(color_s));
+  if (!c) return NULL;
+
   memset(c, 0, sizeof(color_s));
 
   color_set_tag(c, "AUTO");
 
-    // Return RETVAL
+    // Return pointer to new color_s structure
   return c;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Destroy existing color structure
 
-     FUNCTION_DETAILS
+     Frees ALL memory associated with a color structure (deep memory deallocate)
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param c    "color_s *" - pointer to existing color structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -95,14 +105,14 @@ void color_destroy(color_s *c)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Copies an existing color structure
 
-     FUNCTION_DETAILS
+     Performs a deep copy of an existing color structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param c    "color_s *" - pointer to existing color structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "color_s *" success
+     @retval NULL    failure
 
   */
 
@@ -114,6 +124,8 @@ color_s *color_copy(color_s *c)
   assert(c);
 
   nc = color_create();
+  if (!nc) return NULL;
+
   memcpy(nc, c, sizeof(color_s));
 
   if (c->tag) nc->tag = strdup(c->tag);
@@ -124,14 +136,21 @@ color_s *color_copy(color_s *c)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set all elements of a color structure
 
-     FUNCTION_DETAILS
+     A comprehensive "setter" for all elements of a color structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     RGB color portions of a color are doubles in the range of (0.0 thru 255.0).
+     The A (Alpha channel) portion of a color is in the range of (0.0 thru 1.0).
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @param c    pointer to existing color structure
+     @param tag  pointer to string containing a tag (name) for color
+     @param r    red portion of RGBA color
+     @param g    green portion of RGBA color
+     @param b    blue portion of RGBA color
+     @param a    alpha portion of RGBA color
+
+     @retval NONE
 
   */
 
@@ -147,14 +166,18 @@ void color_set(color_s *c, char *tag, double r, double g, double b, double a)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get all elements of color structure
 
-     FUNCTION_DETAILS
+     A comprehensive "getter" for all elements of a color structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param c    pointer to an existing color structure
+     @param tag  pointer to char * (contains tag string on return)
+     @param r    pointer to double (contains red component of color on return)
+     @param g    pointer to double (contains green component of color on return)
+     @param b    pointer to double (contains blue component of color on return)
+     @param a    pointer to double (contains alpha component of color on return)
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -179,14 +202,20 @@ void color_get(color_s *c,
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set color components of color structure
 
-     FUNCTION_DETAILS
+     Sets all color components of a color structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     RGB color portions of a color are doubles in the range of (0.0 thru 255.0).
+     The A (Alpha channel) portion of a color is in the range of (0.0 thru 1.0).
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @param c    pointer to existing color structure
+     @param r    red component of color
+     @param g    green component of color
+     @param b    blue component of color
+     @param a    alpha component of color
+
+     @retval NONE    failure
 
   */
 
@@ -203,14 +232,17 @@ void color_set_rgba(color_s *c, double r, double g, double b, double a)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get color components of color structure
 
-     FUNCTION_DETAILS
+     Gets all color components of a color structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param c    pointer to existing color structure
+     @param r    pointer to double (contains red component of color on return)
+     @param g    pointer to double (contains green component of color on return)
+     @param b    pointer to double (contains blue component of color on return)
+     @param a    pointer to double (contains alpha component of color on return)
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE    failure
 
   */
 
@@ -231,14 +263,18 @@ void color_get_rgba(color_s *c, double *r, double *g, double *b, double *a)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set tag (name) of color structure
 
-     FUNCTION_DETAILS
+     Set tag (name) of color structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     If the color structure already contains a tag, that string will be
+     de-allocated first.  The passed tag will be duplicated, therefore the
+     passed tag can be a literal or dynamic string.
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @param c    pointer to existing color structure
+     @param tag  pointer to string containing new tag value
+
+     @retval NONE
 
   */
 
@@ -254,14 +290,13 @@ void color_set_tag(color_s *c, char *tag)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get tag (name) of color structure
 
-     FUNCTION_DETAILS
+     Returns the tag of a color structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param c    pointer to existing color structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "char *" success
 
   */
 
@@ -269,20 +304,20 @@ char *color_get_tag(color_s *c)
 {
     // Sanity check parameters.
   assert(c);
-    // Return RETVAL
+    // Return "char *" containing tag of color structure
   return c->tag;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set red component of color structure.
 
-     FUNCTION_DETAILS
+     Sets the red component of a color structure.  (Range is 0.0 - 255.0)
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param c    pointer to existing color structure
+     @param r    red component of color structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -295,14 +330,13 @@ void color_set_r(color_s *c, double r)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Returns red component from color structure
 
-     FUNCTION_DETAILS
+     Returns the red component value from a color structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param c    pointer to existing color structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "double" success
 
   */
 
@@ -310,20 +344,20 @@ double color_get_r(color_s *c)
 {
     // Sanity check parameters.
   assert(c);
-    // Return RETVAL
+    // Return red component of color structure
   return c->r;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set green component of color structure.
 
-     FUNCTION_DETAILS
+     Sets the green component of a color structure.  (Range is 0.0 - 255.0)
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param c    pointer to existing color structure
+     @param g    green component of color structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -336,14 +370,13 @@ void color_set_g(color_s *c, double g)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Returns green component from color structure
 
-     FUNCTION_DETAILS
+     Returns the green component value from a color structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param c    pointer to existing color structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "double" success
 
   */
 
@@ -357,14 +390,14 @@ double color_get_g(color_s *c)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set blue component of color structure.
 
-     FUNCTION_DETAILS
+     Sets the blue component of a color structure.  (Range is 0.0 - 255.0)
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param c    pointer to existing color structure
+     @param b    blue component of color structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -377,14 +410,13 @@ void color_set_b(color_s *c, double b)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Returns blue component from color structure
 
-     FUNCTION_DETAILS
+     Returns the blue component value from a color structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param c    pointer to existing color structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "double" success
 
   */
 
@@ -398,14 +430,14 @@ double color_get_b(color_s *c)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set alpha component of color structure.
 
-     FUNCTION_DETAILS
+     Sets the alpha component of a color structure.  (Range is 0.0 - 1.0)
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param c    pointer to existing color structure
+     @param a    alpha component of color structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -418,14 +450,13 @@ void color_set_a(color_s *c, double a)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Returns alpha component from color structure
 
-     FUNCTION_DETAILS
+     Returns the alpha component value from a color structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param c    pointer to existing color structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "double" success
 
   */
 
@@ -439,14 +470,27 @@ double color_get_a(color_s *c)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert a string into a color structure.
 
-     FUNCTION_DETAILS
+     Converts a specifically formatted string into a color structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     The string is in the following format:
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+        [R,G,B,A]
+
+     where:
+
+       R is red component of color
+       G is green component of color
+       B is blue component of color
+       A is alpha component of color
+
+     NOTE:  the tag element of the color is set to "AUTO"
+
+     @param s    pointer to formatted color defining string
+
+     @retval "color_s *" success
+     @retval NULL
 
   */
 
@@ -464,22 +508,24 @@ color_s *str2color(char *s)
 
   sscanf(s, "[%lf,%lf,%lf,%lf]", &c->r, &c->g, &c->b, &c->a);
 
-    // Return RETVAL
+    // Return pointer to new color structure
   return c;
 }
 
-  // NOTE: returned string is statically allocated, and this function is NOT
-  //       re-entrant friendly.
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Converts a color structure to a formatted string
 
-     FUNCTION_DETAILS
+     Creates a specifically formatted string that represents the data contained
+     in a color structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     NOTE:  See str2color for definition of string
+     NOTE:  returned string is statically allocated, and this function is NOT
+            re-entrant friendly.
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @param c    pointer to existing color structure
+
+     @retval "char *"
 
   */
 
@@ -493,7 +539,7 @@ char *color2str(color_s *c)
   memset(s, 0, 80);
   snprintf(s, 80, "[%f,%f,%f,%f]\n", c->r, c->g, c->b, c->a);
 
-    // Return RETVAL
+    // Return pointer to static string containing formatted string
   return s;
 }
 
