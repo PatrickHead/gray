@@ -1,9 +1,9 @@
 /*!
     @file grid-size.h
 
-    @brief Header file for grid_size data
+    @brief Header file for grid size data
 
-    @timestamp Wed, 27 Aug 2014 07:08:15 +0000
+    @timestamp Sun, 14 Sep 2014 13:47:54 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,9 +28,9 @@
 
     @file grid-size.h
 
-    Header file for grid_size data, a support structure for data.
+    Header file for grid size data, a support structure for grid data.
 
-    grid_size is a simple structure describing the width and height of a grid
+    "grid size" is a simple structure describing the width and height of a grid
 
   */
 

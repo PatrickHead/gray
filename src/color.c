@@ -3,7 +3,7 @@
 
     @brief Source file for color data management routines
 
-    @timestamp Thu, 04 Sep 2014 02:36:18 +0000
+    @timestamp Sun, 14 Sep 2014 15:29:06 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -105,7 +105,7 @@ void color_destroy(color_s *c)
 
   /*!
 
-     @brief Copies an existing color structure
+     @brief Copy an existing color structure
 
      Performs a deep copy of an existing color structure.
 

@@ -3,7 +3,7 @@
 
     @brief Header file for splitting and tagging STDIO data stream
 
-    @timestamp Wed, 20 Aug 2014 04:10:04 +0000
+    @timestamp Sun, 07 Sep 2014 01:34:04 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,7 +28,7 @@
 
     @file doc-list.h
 
-    Header file for utility that splits and tags desired parts of STDIO stream
+    Header file for routine that splits and tags desired parts of STDIO stream
 
     A document list (doc-list) can be created from any STDIO stream (FILE *)
     by supplying a single (can be complex) Regular Expression that is used

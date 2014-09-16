@@ -1,9 +1,9 @@
 /*!
     @file grid-size.c
 
-    @brief SOURCE_BRIEF
+    @brief Source for grid size data management routines
 
-    @timestamp Wed, 20 Aug 2014 03:18:04 +0000
+    @timestamp Sun, 14 Sep 2014 23:41:34 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,9 +28,9 @@
 
     @file grid-size.c
 
-    SOURCE_BRIEF
+    Source file for grid size data, a support structure for grid data.
 
-    SOURCE_DETAILS
+    "grid size" is a simple structure describing the width and height of a grid
 
   */
 
@@ -47,14 +47,15 @@
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Create "grid size" structure
 
-     FUNCTION_DETAILS
+     Allocates and returns a "grid size" structure.
+     Defaults:
+       width is 0
+       height is 0
 
-     @param PARMNAME    PARM_DESCRIPTION
-
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "grid_size_s *" success
+     @retval NULL    failure
 
   */
 
@@ -63,7 +64,7 @@ grid_size_s *grid_size_create(void)
   grid_size_s *gs;
 
   gs = (grid_size_s *)malloc(sizeof(grid_size_s));
-  memset(gs, 0, sizeof(grid_size_s));
+  if (gs) memset(gs, 0, sizeof(grid_size_s));
 
     // Return RETVAL
   return gs;
@@ -71,14 +72,17 @@ grid_size_s *grid_size_create(void)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Destroy a "grid size" structure (using void reference)
 
-     FUNCTION_DETAILS
+     Un-allocates all memory associated with a "grid size" structure, using
+     a "void *" reference.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     NOTE:  This "void *" version is possibly used by generic structured data
+            handlers, such as lists, grids, etc.
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @param v    (void *) - address of grid_size_s structure
+
+     @retval NONE
 
   */
 
@@ -86,19 +90,20 @@ void grid_size_destroy_void(void *v)
 {
     // Sanity check parameters.
   assert(v);
+
+    // Call type specific destroy function
   grid_size_destroy((grid_size_s *)v);
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Destroy a "grid size" structure
 
-     FUNCTION_DETAILS
+     Un-allocates all memory associated with a "grid size" structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param gs    (grid_size_s *) - address of grid_size_s structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -106,19 +111,20 @@ void grid_size_destroy(grid_size_s *gs)
 {
     // Sanity check parameters.
   assert(gs);
+
   free(gs);
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Copy an existing "grid size" structure
 
-     FUNCTION_DETAILS
+     Makes a deep copy of a "grid size" data structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param gs    pointer to existing "grid size" structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "grid_size_s *" success
+     @retval NULL    failure
 
   */
 
@@ -135,20 +141,21 @@ grid_size_s *grid_size_copy(grid_size_s *gs)
   grid_size_set_width(ngs, grid_size_get_width(gs));
   grid_size_set_height(ngs, grid_size_get_height(gs));
 
-    // Return RETVAL
+    // Return "grid_size_s *"
   return ngs;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set all elements of a "grid size" structure
 
-     FUNCTION_DETAILS
+     A comprehensive "setter" for all elements of a "grid size" structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param gs      pointer to existing "grid size" structure
+     @param width   width of grid
+     @param height  height of grid
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -163,14 +170,15 @@ void grid_size_set(grid_size_s *gs, int width, int height)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get all elements of "grid size" structure
 
-     FUNCTION_DETAILS
+     A comprehensive "getter" for all elements of a "grid size" structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param gs      pointer to an existing "grid size" structure
+     @param width   pointer to int
+     @param height  pointer to int
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -185,14 +193,14 @@ void grid_size_get(grid_size_s *gs, int *width, int *height)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set width of "grid size" structure.
 
-     FUNCTION_DETAILS
+     Sets the width of a "grid size" structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param gs     pointer to existing "grid size" structure
+     @param width  width of grid
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -208,14 +216,13 @@ void grid_size_set_width(grid_size_s *gs, int width)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Returns width from "grid size" structure
 
-     FUNCTION_DETAILS
+     Returns the width value from a "grid size" structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param gs   pointer to existing "grid size" structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "int" success
 
   */
 
@@ -223,20 +230,20 @@ int grid_size_get_width(grid_size_s *gs)
 {
     // Sanity check parameters.
   assert(gs);
-    // Return RETVAL
+    // Return width of grid
   return gs->width;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set height of "grid size" structure.
 
-     FUNCTION_DETAILS
+     Sets the height of a "grid size" structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param gs      pointer to existing "grid size" structure
+     @param height  width of grid
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -252,14 +259,13 @@ void grid_size_set_height(grid_size_s *gs, int height)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Returns height from "grid size" structure
 
-     FUNCTION_DETAILS
+     Returns the height value from a "grid size" structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param gs   pointer to existing "grid size" structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "int" success
 
   */
 
@@ -273,14 +279,23 @@ int grid_size_get_height(grid_size_s *gs)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert a string into a "grid size" structure.
 
-     FUNCTION_DETAILS
+     Converts a specifically formatted string into a "grid size" structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     The string is in the following format:
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+        [W,H]
+
+     where:
+
+       W is width of grid
+       H is height of grid
+
+     @param s    pointer to formatted "grid size" defining string
+
+     @retval "grid_size_s *" success
+     @retval NULL
 
   */
 
@@ -296,20 +311,24 @@ grid_size_s *str2grid_size(char *s)
 
   sscanf(s, "[%d,%d]", &gs->width, &gs->height);
 
-    // Return RETVAL
+    // Return "grid_size_s *"
   return gs;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Converts a "grid size" structure to a formatted string
 
-     FUNCTION_DETAILS
+     Creates a specifically formatted string that represents the data contained
+     in a "grid size" structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     NOTE:  See str2grid_size for definition of string
+     NOTE:  returned string is statically allocated, and this function is NOT
+            re-entrant friendly.
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @param gs    pointer to existing "grid size" structure
+
+     @retval "char *"
 
   */
 
@@ -324,7 +343,7 @@ char *grid_size2str(grid_size_s *gs)
     grid_size_get_width(gs),
     grid_size_get_height(gs));
 
-    // Return RETVAL
+    // Return "char *"
   return s;
 }
 

@@ -1,9 +1,9 @@
 /*!
     @file doc-list.c
 
-    @brief SOURCE_BRIEF
+    @brief Source file for splitting and tagging STDIO data stream routines
 
-    @timestamp Wed, 20 Aug 2014 03:18:03 +0000
+    @timestamp Sun, 14 Sep 2014 13:44:23 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,9 +28,25 @@
 
     @file doc-list.c
 
-    SOURCE_BRIEF
+    Source file for routine that splits and tags desired parts of STDIO stream
 
-    SOURCE_DETAILS
+    A document list (doc-list) can be created from any STDIO stream (FILE *)
+    by supplying a single (can be complex) Regular Expression that is used
+    as a marker to split the stream into separate parts.  The resulting doc-list
+    will contain a list of these text parts.  In addition, a second distinct
+    Regular Expression can be supplied to create a list of pointers into the
+    doc-list that mark any "interesting" parts.
+
+    For example, a stream may contain many XML documents.  An RE can be
+    supplied that will split the stream into individual XML document texts.  In
+    addition, a second RE can be supplied that will identify all XML documents
+    with an XML element tag name of "customer" or "vendor" for later use by
+    a calling program.  This is just an example, as the REs can split and tag
+    most any text that can be imagined or needed by the caller.
+
+    Also, utility functions are provided that allow the user to produce new
+    parts to the doc-list, and to consume (remove) marked parts from the
+    doc-list.
 
   */
 
@@ -48,19 +64,30 @@
 
 #include "doc-list.h"
 
+  // Internal helper functions
+
 static void keeper(doc_list_s *dl, char *doc);
 static char *find_doc(doc_list_s *dl, char *doc);
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Create doc-list structure
 
-     FUNCTION_DETAILS
+     Creates a doc-list structure, and populates the two contained lists from
+     the open STDIO input stream.  The user supplies an open "FILE *" to any
+     STDIO file stream, and two regular expressions.   The first RE is used
+     to find any matching patterns that are used to mark (or start) a new
+     document from the stream.  All text that follows the matching RE is saved
+     as a document, up to the next RE match, which in turn starts a new
+     document.  The second RE is used to match any documents that are to be
+     marked as 'keeper' documents in a second list.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param f    "FILE *" of open input stream
+     @param mpat "char *" containing string for document matching RE
+     @param kpat "char *" containing string for document keeping RE
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "doc_list_s *" success
+     @retval NULL failure
 
   */
 
@@ -75,20 +102,31 @@ doc_list_s *doc_list_create(FILE *f, char *mpat, char *kpat)
     // Sanity check parameters.
   assert(f);
 
+    // If reading from a TTY, then do nothing
+
   if (isatty(fileno(f))) return NULL;
   
+    // Set default RE patterns, if not supplied by user
+    // default pattern is ".*", which matches everything
+
   if (!mpat) mpat = def_pat;
   if (!kpat) kpat = def_pat;
+
+    // Create base doc_list_s structure
 
   dl = (doc_list_s *)malloc(sizeof(doc_list_s));
   memset(dl, 0, sizeof(doc_list_s));
 
+    // Save RE patterns
+
   dl->mpat = strdup(mpat);
   dl->kpat = strdup(kpat);
 
+    // Compile the mpat RE
+
   if (regcomp(&mre, dl->mpat, REG_NOSUB)) return NULL;
 
-    // find and separate documents
+    // Find and separate documents
 
   while (fgets(b, 2048, f))
   {
@@ -104,27 +142,29 @@ doc_list_s *doc_list_create(FILE *f, char *mpat, char *kpat)
     if (dl->list) dl->list[dl->nlist-1] = strapp(dl->list[dl->nlist-1], b);
   }
 
-    // find the keepers
+    // Find the keepers
 
   for (i = 0; i < dl->nlist; i++)
     keeper(dl, dl->list[i]);
 
+    // Clean up compiled mpat
+
   regfree(&mre);
 
-    // Return RETVAL
+    // Return "doc_list_s *"
+
   return dl;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Free up all allocated memory associated with doc-list
 
-     FUNCTION_DETAILS
+     Frees doc-list structure and all associated allocated memory.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param dl    "doc_list_s *"
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -150,14 +190,14 @@ void doc_list_destroy(doc_list_s *dl)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Add a document to doc-list
 
-     FUNCTION_DETAILS
+     Adds a new document to an existing doc-list
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param dl    "doc_list_s *" pointer to existing document list
+     @param doc   "char *" pointer to new document to add to list
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NULL
 
   */
 
@@ -178,14 +218,14 @@ void doc_list_produce(doc_list_s *dl, char *doc)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Remove a document from doc-list
 
-     FUNCTION_DETAILS
+     Removes a document from and existing document list
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param dl    "doc_list_s *" pointer to existing document list
+     @param doc   "char *" pointer to document already in list
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NULL
 
   */
 
@@ -220,6 +260,20 @@ void doc_list_consume(doc_list_s *dl, char *doc)
   }
 }
 
+  /*!
+
+     @brief INTERNAL: Check and mark a document in keeper list
+
+     Checks a document for inclusion in keeper list, and marks it as a keeper
+     if it matches the doc-list keeper RE pattern.
+
+     @param dl    "doc_list_s *" pointer to existing document list
+     @param doc   "char *" pointer to document already in list
+
+     @retval NULL
+
+  */
+
 static void keeper(doc_list_s *dl, char *doc)
 {
   regex_t kre;
@@ -228,10 +282,13 @@ static void keeper(doc_list_s *dl, char *doc)
   assert(dl);
   assert(doc);
 
+    // Locate the document in list, return if not found
   if (!find_doc(dl, doc)) return;
 
+    // Compile the keeper RE pattern
   if (regcomp(&kre, dl->kpat, REG_NOSUB|REG_EXTENDED)) return;
 
+    // Is document a keeper?  If yes, add it to keeper list
   if (!regexec(&kre, doc, 0, NULL, 0))
   {
     ++dl->nkeep;
@@ -243,6 +300,20 @@ static void keeper(doc_list_s *dl, char *doc)
   }
 }
 
+  /*!
+
+     @brief INTERNAL: Find a document in doc-list
+
+     Locates a document in document list, based on passed document pointer.
+
+     @param dl    "doc_list_s *" pointer to existing document list
+     @param doc   "char *" pointer to document to find in list
+
+     @retval "char *"  success
+     @retval NULL  failure
+
+  */
+
 static char *find_doc(doc_list_s *dl, char *doc)
 {
   int i;
@@ -251,10 +322,11 @@ static char *find_doc(doc_list_s *dl, char *doc)
   assert(dl);
   assert(doc);
 
+    // Cycle through all documents in list, return pointer if found in list
   for (i = 0; i < dl->nlist; i++)
     if (dl->list[i] == doc) return doc;
 
-    // Return RETVAL
+    // Return NULL (not found)
   return NULL;
 }
 
