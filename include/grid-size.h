@@ -3,7 +3,7 @@
 
     @brief Header file for grid size data
 
-    @timestamp Sun, 14 Sep 2014 13:47:54 +0000
+    @timestamp Mon, 22 Sep 2014 13:48:27 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -38,14 +38,14 @@
 #define GRID_SIZE_H
 
   /*!
-    brief TYPEDEF_BRIEF
+    @brief TYPEDEF_BRIEF
   */
 
 typedef struct
 {
-    /*! brief width of grid */
+    /*! @brief width of grid */
   int width;
-    /*! brief height of grid */
+    /*! @brief height of grid */
   int height;
 } grid_size_s;
 

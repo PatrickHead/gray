@@ -1,9 +1,9 @@
 /*!
     @file grid.c
 
-    @brief SOURCE_BRIEF
+    @brief Source file for grid (matrix/spreadsheet) data
 
-    @timestamp Wed, 20 Aug 2014 03:18:04 +0000
+    @timestamp Sun, 28 Sep 2014 07:47:29 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,9 +28,17 @@
 
     @file grid.c
 
-    SOURCE_BRIEF
+    Source file for grid structured data management
 
-    SOURCE_DETAILS
+    A grid (matrix/spreadsheet) is a 2 dimensional orthoganol structured array
+    of data cells.  Each cell contains a pointer to its neighboring cell to the
+    left, right, above and below.  These pointers allow for easy navigation to
+    any neighboring cell.   The data in each cell is generic, defined and
+    managed by the calling program, and can contain any desired data, including
+    another grid.
+
+    Functions are provided for adding new rows and columns to the grid, as well
+    as removing rows and columns.
 
   */
 
@@ -46,35 +54,44 @@
 #include "grid.h"
 
   /*!
-    brief TYPEDEF_BRIEF
+    @brief INTERNAL: cell data structure
   */
 
 typedef struct _cell
 {
-  struct _cell *up;     // Up
-  struct _cell *down;   // Down
-  struct _cell *left;   // Left
-  struct _cell *right;  // Right
-  void *payload;        // Payload
+    /*! @brief Pointer to cell above this one, if any */
+  struct _cell *up;
+    /*! @brief Pointer to cell below this one, if any */
+  struct _cell *down;
+    /*! @brief Pointer to cell to the left of this one, if any */
+  struct _cell *left;
+    /*! @brief Pointer to cell to the right of this one, this one, if any */
+  struct _cell *right;
+    /*! @brief Pointer to user defined data contained in cell */
+  void *payload;
 } _cell;
 
   /*!
-    brief TYPEDEF_BRIEF
+    @brief INTERNAL: grid details structure
   */
 
 typedef struct
 {
-  _cell *origin;               // Origin
-  _cell *current;              // Current
-  _cell *end;                  // End
-    /*! brief ELEMENT_BRIEF */
+    /*! @brief: pointer to first cell in grid (upper-left) */
+  _cell *origin;
+    /*! @brief: pointer to current cell in grid */
+  _cell *current;
+    /*! @brief: pointer to last cell in grid (lower-right) */
+  _cell *end;
+    /*! @brief current size of grid */
   grid_size_s *size;
-    /*! brief ELEMENT_BRIEF */
+    /*! @brief x,y coordinates of current cell */
   vertex_s *location;
-  grid_payload_free grid_pl_free;  // Memory de-allocation function.  Can be
-                                   //   payload specific.
+    /*! @brief user supplied payload de-allocation function pointer */
+  grid_payload_free grid_pl_free;
 } _grid_internals;
 
+  // INTERNAL: utility functions for module
 static _cell *_cell_new(void *pl);
 static void _cell_free(_cell *c, grid_payload_free fpl);
 
@@ -87,124 +104,138 @@ static _cell *_grid_find_by_value(grid_s *gs,
                                   grid_payload_compare cf);
 static _cell *_grid_get_cell(grid_s *grid);
 
-  // New creates a new grid
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Create a new grid
 
-     FUNCTION_DETAILS
+     Creates a new grid, allocationg all necessary components, and setting
+     reasonable defaults.
 
-     @param PARMNAME    PARM_DESCRIPTION
-
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "grid_s *" success
+     @retval NULL    failure
 
   */
 
 grid_s *grid_create(void)
 {
   grid_s *g;
-  grid_size_s *gs;
+  _grid_internals *gi;
 
   g = malloc(sizeof(grid_s));
+  if (!g) return NULL;
+
   memset(g, 0, sizeof(grid_s));
-  g->_internals = (void*)malloc(sizeof(_grid_internals));
-  memset(g->_internals, 0, sizeof(_grid_internals));
-  ((_grid_internals *)(g->_internals))->location = vertex_create();
-  ((_grid_internals *)(g->_internals))->size = grid_size_create();
+
+  gi = (void*)malloc(sizeof(_grid_internals));
+  if (!gi)
+  {
+    grid_destroy(g);
+    return NULL;
+  }
+  memset(gi, 0, sizeof(_grid_internals));
+  g->_internals = gi;
+
+  gi->location = vertex_create();
+  if (!gi->location)
+  {
+    grid_destroy(g);
+    return NULL;
+  }
+  vertex_set_y(gi->location, 0);
+  vertex_set_x(gi->location, 0);
+
+  gi->size = grid_size_create();
+  if (!gi->size)
+  {
+    grid_destroy(g);
+    return NULL;
+  }
+  grid_size_set(gi->size, 1, 1);
+
   grid_set_free(g, free);
 
-  gs = grid_size_create();
-  grid_size_set(gs, 1, 1);
-  grid_set_size(g, gs);
-
-  vertex_set_x(((_grid_internals *)(g->_internals))->location, 0);
-  vertex_set_y(((_grid_internals *)(g->_internals))->location, 0);
-
-    // Return RETVAL
+    // Return "grid_s *"
   return g;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Destroy grid, leaving user data
 
-     FUNCTION_DETAILS
+     De-allocates a grid, and all associated "wrapping" structures, but leaves
+     the user managed cell payload data intact.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
 void grid_free(grid_s *grid)
 {
-  _grid_internals *gin;
+  _grid_internals *gi;
 
     // Sanity check parameters.
   assert(grid);
 
-  gin = _grid_get_internals(grid);
-  if (!gin) return;
+  gi = _grid_get_internals(grid);
+  if (!gi) return;
 
-  if (gin->size)
-    while (grid_size_get_height(gin->size))
+  if (gi->size)
+    while (grid_size_get_height(gi->size))
       grid_free_row(grid, 0);
 
-  if (gin->size) grid_size_destroy(gin->size);
-  if (gin->location) vertex_destroy(gin->location);
+  if (gi->size) grid_size_destroy(gi->size);
+  if (gi->location) vertex_destroy(gi->location);
 
-  free(gin);
+  free(gi);
   free(grid);
 }
 
-  // Free removes all the items from the grid, and destroys all the cell
-  // payloads.
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Destroy grid
 
-     FUNCTION_DETAILS
+     De-allocates a grid, and all associated data, including user supplied cell
+     payload data.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
 void grid_destroy(grid_s *grid)
 {
-  _grid_internals *gin;
+  _grid_internals *gi;
 
     // Sanity check parameters.
   assert(grid);
 
-  gin = _grid_get_internals(grid);
-  if (!gin) return;
+  gi = _grid_get_internals(grid);
+  if (!gi) return;
 
-  if (gin->size)
-    while (grid_size_get_height(gin->size))
+  if (gi->size)
+    while (grid_size_get_height(gi->size))
       grid_destroy_row(grid, 0);
 
-  if (gin->size) grid_size_destroy(gin->size);
-  if (gin->location) vertex_destroy(gin->location);
+  if (gi->size) grid_size_destroy(gi->size);
+  if (gi->location) vertex_destroy(gi->location);
 
-  free(gin);
+  free(gi);
   free(grid);
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set user defined payload de-allocation function
 
-     FUNCTION_DETAILS
+     Stores the user supplied cell payload de-allocation function
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
+     @param func    pointer to function that can de-allocate cell payload data
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE    failure
 
   */
 
@@ -217,21 +248,20 @@ void grid_set_free(grid_s *grid, grid_payload_free func)
 
   gin = _grid_get_internals(grid);
   if (gin) gin->grid_pl_free = func;
-
-    // Return RETVAL
-  return;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set size of grid
 
-     FUNCTION_DETAILS
+     Explicitly set size of grid.  If size is smaller than current size, then
+     remove necessary cells.  If size is greater that current, then add new
+     empty cells.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
+     @param gs    pointer to "grid size" structure containing desired grid size
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE    failure
 
   */
 
@@ -270,21 +300,20 @@ void grid_set_size(grid_s *grid, grid_size_s *gs)
     // If cols is less than current size, delete cols from end
   for (i = width - 1; cols < (i + 1); --i)
     grid_destroy_column(grid, -1);
-
-    // Return RETVAL
-  return;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set size of grid, leaving user data
 
-     FUNCTION_DETAILS
+     Explicitly set size of grid.  If size is smaller than current size, then
+     remove necessary cells, leaving user supplied data intact.  If size is
+     greater that current, then add new empty cells.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
+     @param gs    pointer to "grid size" structure containing desired grid size
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE    failure
 
   */
 
@@ -323,48 +352,45 @@ void grid_set_size_free_only(grid_s *grid, grid_size_s *gs)
     // If cols is less than current size, delete cols from end
   for (i = width - 1; cols < (i + 1); --i)
     grid_free_column(grid, -1);
-
-    // Return RETVAL
-  return;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get "grid size" structure from grid
 
-     FUNCTION_DETAILS
+     Get "grid size" structure from grid
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to exising grid
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "grid_size_s *" success
+     @retval NULL    failure
 
   */
 
 grid_size_s *grid_get_size(grid_s *grid)
 {
-  _grid_internals *gin;
+  _grid_internals *gi;
 
     // Sanity check parameters.
   assert(grid);
 
-  gin = _grid_get_internals(grid);
-  if (!gin) return NULL;
+  gi = _grid_get_internals(grid);
+  if (!gi) return NULL;
 
-    // Return RETVAL
-  return gin->size;
+    // Return "grid_size_s *"
+  return gi->size;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get location structure from grid
 
-     FUNCTION_DETAILS
+     Get location structure from grid
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to exising grid
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "vertex_s *" success
+     @retval NULL    failure
 
   */
 
@@ -378,20 +404,26 @@ vertex_s *grid_get_location(grid_s *grid)
   gin = _grid_get_internals(grid);
   if (!gin) return NULL;
 
-    // Return RETVAL
+    // Return "vertex *"
   return gin->location;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Create a new row in grid
 
-     FUNCTION_DETAILS
+     Creates a new row, with no cell payload data.  The row will contain the 
+     current numer of columns as is set by the grid width.  The user supplied row
+     parameter determines where the new row will be created.   If the row
+     parameter is negative, the new row will be created after the current last
+     row.  For a non-negative row parameter, the new row will be inserted before
+     the row parameter value.  One exception, if the row parameter contains
+     a value greater than the last row, then it will be set to the last row.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
+     @param row     row AFTER which to add new row
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE    failure
 
   */
 
@@ -498,21 +530,26 @@ void grid_create_row(grid_s *grid, int row)
       grid_size_set_height(gin->size, chgt + 1);
     }
   }
-
-    // Return RETVAL
-  return;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Create a new column in grid
 
-     FUNCTION_DETAILS
+     Creates a new column of cells in grid.  The new column contains a
+     number of cells equal to the current height of the grid.  If a the
+     requested column insertion number is greater than the current width
+     of the grid is passed to this function, then the function returns
+     with no effect.  If the column insertion number is the current width
+     of the grid plus one, then the column is appended to the end of the
+     grid.  If the column number is negative, the new column is also appended
+     to the end of the grid.  Otherwise, the new column is inserted before
+     the column insert number.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
+     @param col    column insertion number
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -619,21 +656,19 @@ void grid_create_column(grid_s *grid, int col)
       grid_size_set_width(gin->size, cwid + 1);
     }
   }
-
-    // Return RETVAL
-  return;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief De-allocates a row in a grid, leaving data intact
 
-     FUNCTION_DETAILS
+     De-allocates all memory associated with all cells in a row, while
+     leaving the memory associated with the cell payload data intact.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
+     @param row    row number to free
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -683,21 +718,19 @@ void grid_free_row(grid_s *grid, int row)
   grid_size_set_height(gin->size, chgt - 1);
   if (row == (chgt - 1)) gin->end = e;
   if (!gin->end) grid_size_set_width(gin->size, 0);
-
-    // Return RETVAL
-  return;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief De-allocates a row in a grid
 
-     FUNCTION_DETAILS
+     De-allocates all memory associated with all cells in a row, including
+     the memory associated with the cell payload.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
+     @param row    row number to free
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -747,21 +780,19 @@ void grid_free_column(grid_s *grid, int col)
   grid_size_set_width(gin->size, cwid - 1);
   if (col == (cwid - 1)) gin->end = e;
   if (!gin->end) grid_size_set_height(gin->size, 0);
-
-    // Return RETVAL
-  return;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief De-allocates a row in a grid
 
-     FUNCTION_DETAILS
+     De-allocates all memory associated with all cells in a row, including
+     the memory associated with the cell payload.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
+     @param row    row number to free
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -814,21 +845,19 @@ void grid_destroy_row(grid_s *grid, int row)
   grid_size_set_height(gin->size, chgt - 1);
   if (row == (chgt - 1)) gin->end = e;
   if (!gin->end) grid_size_set_width(gin->size, 0);
-
-    // Return RETVAL
-  return;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief De-allocates a column in a grid
 
-     FUNCTION_DETAILS
+     De-allocates all memory associated with all cells in a column, including
+     the memory associated with the cell payload.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
+     @param col    column number to free
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -881,21 +910,17 @@ void grid_destroy_column(grid_s *grid, int col)
   grid_size_set_width(gin->size, cwid - 1);
   if (col == (cwid - 1)) gin->end = e;
   if (!gin->end) grid_size_set_height(gin->size, 0);
-
-    // Return RETVAL
-  return;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief De-allocate the payload data of the current cell
 
-     FUNCTION_DETAILS
+     De-allocates the data payload for the current cell in the grid.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -915,21 +940,18 @@ void grid_clear_cell(grid_s *grid)
   if (fpl) fpl(_grid_get_payload(gin->current));
 
   gin->current->payload = NULL;
-
-    // Return RETVAL
-  return;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get current cell in grid
 
-     FUNCTION_DETAILS
+     Returns a pointer to the data payload in the current cell of a grid
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -943,20 +965,22 @@ void *grid_get_cell(grid_s *grid)
   cell = _grid_get_cell(grid);
   if (!cell) return NULL;
 
-    // Return RETVAL
+    // Return "void *"
   return _grid_get_payload(cell);
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Assign payload data to a cell
 
-     FUNCTION_DETAILS
+     Assigns, or re-assigns the payload data for a cell in a grid.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     NOTE:  The current cell payload data, if any, will be de-allocated.
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @param grid    pointer to exising grid
+     @param payload    pointer to new payload data
+
+     @retval NONE
 
   */
 
@@ -977,14 +1001,17 @@ void grid_set_cell(grid_s *grid, void *payload)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Find a cell by reference
 
-     FUNCTION_DETAILS
+     Locates a cell in a grid based on a reference pointer value.  If the 
+     cell is located, the current grid cell is set to the found cell,
+     and the cell payload data is returned.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
+     @param reference    pointer to payload data that may exist in grid
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -1003,24 +1030,30 @@ void *grid_find_by_reference(grid_s *grid, void *reference)
   if (c)
   {
     gin->current = c;
-      // Return RETVAL
+      // Return "void *"
   return c;
   }
 
-    // Return RETVAL
+    // Return NULL
   return NULL;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Find a cell by value
 
-     FUNCTION_DETAILS
+     Locates a cell in a grid by value.  If the cell is located, the
+     current grid cell is set to the found cell, and the payload data is
+     returned.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     NOTE:  A user defined cell compare function must be supplied.
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @param grid    pointer to existing grid
+     @param value    pointer to value to find
+     @param func    pointer to function to compare cell values
+
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -1043,24 +1076,25 @@ void *grid_find_by_value(grid_s *grid,
   if (c)
   {
     gin->current = c;
-      // Return RETVAL
+      // Return "void *"
   return c;
   }
 
-    // Return RETVAL
+    // Return NULL
   return NULL;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Located first cell in grid
 
-     FUNCTION_DETAILS
+     Locates the first cell in the grid, and returns the payload data of
+     the origin cell.  The current grid cell is set to the origin cell.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -1081,20 +1115,20 @@ void *grid_origin(grid_s *grid)
   vertex_set_y(gin->location, 0);
   vertex_set_x(gin->location, 0);
 
-    // Return RETVAL
+    // Return "void *"
   return pl;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Locate current cell in grid
 
-     FUNCTION_DETAILS
+     Returns the payload data of the current cell in a grid.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -1111,20 +1145,22 @@ void *grid_current(grid_s *grid)
 
   pl = _grid_get_payload(gin->current);
 
-    // Return RETVAL
+    // Return "void *"
   return pl;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Locate the last (lower, right) cell in a grid
 
-     FUNCTION_DETAILS
+     Locates the last cell in a grid.   The last cell is the lower, right
+     most cell in the grid.  Returns the payload data of that cell.  The
+     current grid cell is set to the last cell.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing cell
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -1145,20 +1181,23 @@ void *grid_end(grid_s *grid)
   vertex_set_y(gin->location, grid_size_get_height(gin->size) - 1);
   vertex_set_x(gin->location, grid_size_get_width(gin->size) - 1);
 
-    // Return RETVAL
+    // Return "void *"
   return pl;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Move one cell to the left in a grid
 
-     FUNCTION_DETAILS
+     Moves the current cell location in a grid one cell to the left.  Returns
+     the payload data of that cell.  If the current cell location is already
+     a the left most position, then no action is taken, and nothing is
+     returned.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -1184,20 +1223,23 @@ void *grid_left(grid_s *grid)
   gin->current = c->left;
   vertex_set_x(gin->location, vertex_get_x(gin->location) - 1);
 
-    // Return RETVAL
+    // Return "void *"
   return pl;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Move one cell to the right in a grid
 
-     FUNCTION_DETAILS
+     Moves the current cell location in a grid one cell to the right.  Returns
+     the payload data of that cell.  If the current cell location is already
+     a the right most position, then no action is taken, and nothing is
+     returned.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -1223,20 +1265,23 @@ void *grid_right(grid_s *grid)
   gin->current = c->right;
   vertex_set_x(gin->location, vertex_get_x(gin->location) + 1);
 
-    // Return RETVAL
+    // Return "void *"
   return pl;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Move up one cell in a grid
 
-     FUNCTION_DETAILS
+     Moves the current cell location in a grid up one cell.  Returns
+     the payload data of that cell.  If the current cell location is already
+     a the top most position, then no action is taken, and nothing is
+     returned.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -1262,20 +1307,23 @@ void *grid_up(grid_s *grid)
   gin->current = c->up;
   vertex_set_y(gin->location, vertex_get_y(gin->location) - 1);
 
-    // Return RETVAL
+    // Return "void *"
   return pl;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Move down one one cell in a grid
 
-     FUNCTION_DETAILS
+     Moves the current cell location in a grid down one cell.  Returns
+     the payload data of that cell.  If the current cell location is already
+     a the bottom most position, then no action is taken, and nothing is
+     returned.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param grid    pointer to existing grid
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -1301,20 +1349,28 @@ void *grid_down(grid_s *grid)
   gin->current = c->down;
   vertex_set_y(gin->location, vertex_get_y(gin->location) + 1);
 
-    // Return RETVAL
+    // Return "void *"
   return pl;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Move to specific cell location in a grid
 
-     FUNCTION_DETAILS
+     Moves current cell location in a grid to a specific row and column.  The
+     payload data of that cell is returned.  If the new location is outside
+     the current grid boundaries, then no action is taken, and nothing is
+     returned.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     NOTE:  Cell locations in a grid are based at 1, therefore the first
+            (origin) cell location is 1, 1.
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @param grid    pointer to existing grid
+     @param row    row number of new cell location
+     @param col    column number of new cell location
+
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -1356,11 +1412,23 @@ void *grid_goto(grid_s *grid, int row, int col)
   vertex_set_y(gin->location, row);
   vertex_set_x(gin->location, col);
 
-    // Return RETVAL
+    // Return "void *"
   return _grid_get_payload(c);
 }
 
 // STATIC functions
+
+  /*!
+
+     @brief INTERNAL: Create a new cell
+
+     Allocates a new _cell structure.
+
+     @param pl    pointer to payload data for new cell
+
+     @retval "_cell *" success
+
+  */
 
 static _cell *_cell_new(void *pl)
 {
@@ -1371,9 +1439,24 @@ static _cell *_cell_new(void *pl)
 
   c->payload = pl;
 
-    // Return RETVAL
+    // Return "_cell *"
   return c;
 }
+
+  /*!
+
+     @brief INTERNAL:  De-allocate a cell and possibly payload data
+
+     De-allocates an existing cell, and possibly a the payload data
+     associated with the cell.  If no payload data destructor function
+     is supplied, then the payload data is left intact.
+
+     @param c    pointer to existing cell
+     @param fpl    pointer to user defined payload data destructor
+
+     @retval "_cell *" success
+
+  */
 
 static void _cell_free(_cell *c, grid_payload_free fpl)
 {
@@ -1382,6 +1465,18 @@ static void _cell_free(_cell *c, grid_payload_free fpl)
   if (fpl) fpl(c->payload);
   free(c);
 }
+
+  /*!
+
+     @brief INTERNAL: Get payload data destructor function
+
+     Returns the previously assigned payload data destructor.
+
+     @param grid    pointer to existing grid
+
+     @retval "grid_payload_free *" success
+
+  */
 
 static grid_payload_free _grid_get_pl_free(grid_s *grid)
 {
@@ -1393,25 +1488,72 @@ static grid_payload_free _grid_get_pl_free(grid_s *grid)
   gin = _grid_get_internals(grid);
   if (!gin) return NULL;
 
-    // Return RETVAL
+    // Return "grid_payload_free *"
   return gin->grid_pl_free;
 }
+
+  /*!
+
+     @brief INTERNAL:  Get grid internals structure
+
+     Returns the internals structure associated with a grid
+
+     @param grid    pointer to existing grid
+
+     @retval "_grid_internals *" success
+
+  */
 
 static _grid_internals *_grid_get_internals(grid_s *grid)
 {
     // Sanity check parameters.
   assert(grid);
-    // Return RETVAL
-  return (_grid_internals*)grid->_internals;
+    // Return "_grid_internals *"
+  return (_grid_internals *)grid->_internals;
 }
+
+  /*!
+
+     @brief INTERNAL:  Get payload data from a cell
+
+     Returns the payload data associated with a cell.
+
+     @param c    pointer to existing cell
+
+     @retval "void *" success
+
+  */
 
 static void *_grid_get_payload(_cell *c)
 {
     // Sanity check parameters.
   assert(c);
-    // Return RETVAL
+    // Return "void *"
   return c->payload;
 }
+
+  /*!
+
+     @brief INTERNAL:  Find a cell by reference
+
+     Locates a cell in a grid based on a reference pointer value.  If the 
+     cell is located, the current grid cell is set to the found cell,
+     and the cell payload data is returned.
+
+     NOTE:  This function does the actual work of finding a cell by
+            reference.  The public API function above is a wrapper around
+            this function.
+
+     NOTE:  This function differs from the public API version by returning
+            the entire internal cell structure, not just the payload data.
+
+     @param grid    pointer to existing grid
+     @param pl    pointer to payload data that may exist in grid
+
+     @retval "_cell *" success
+     @retval NULL    failure
+
+  */
 
 static _cell *_grid_find_by_reference(grid_s *grid, void *pl)
 {
@@ -1434,14 +1576,40 @@ static _cell *_grid_find_by_reference(grid_s *grid, void *pl)
       {
         vertex_set_y(gin->location, y);
         vertex_set_x(gin->location, x);
-          // Return RETVAL
-  return c2;
+          // Return "_cell *"
+        return c2;
       }
   }
 
-    // Return RETVAL
+    // Return NULL
   return NULL;
 }
+
+  /*!
+
+     @brief INTERNAL:  Find a cell by value
+
+     Locates a cell in a grid by value.  If the cell is located, the
+     current grid cell is set to the found cell, and the payload data is
+     returned.
+
+     NOTE:  A user defined cell compare function must be supplied.
+
+     NOTE:  This function does the actual work of finding a cell by
+            value.  The public API function above is a wrapper around
+            this function.
+
+     NOTE:  This function differs from the public API version by returning
+            the entire internal cell structure, not just the payload data.
+
+     @param grid    pointer to existing grid
+     @param pl    pointer to payload data that may exist in grid
+     @param cf    pointer to function to compare cell values
+
+     @retval "_cell *" success
+     @retval NULL    failure
+
+  */
 
 static _cell *_grid_find_by_value(grid_s *grid,
                                   void *pl,
@@ -1467,14 +1635,26 @@ static _cell *_grid_find_by_value(grid_s *grid,
       {
         vertex_set_y(gin->location, y);
         vertex_set_x(gin->location, x);
-          // Return RETVAL
-  return c2;
+          // Return "_cell *"
+        return c2;
       }
   }
 
-    // Return RETVAL
+    // Return NULL
   return NULL;
 }
+
+  /*!
+
+     @brief INTERNAL:  Get current cell
+
+     Returns the cell structure at the current grid cell location.
+
+     @param grid    pointer to existing grid
+
+     @retval "_cell *" success
+
+  */
 
 static _cell *_grid_get_cell(grid_s *grid)
 {
@@ -1486,7 +1666,7 @@ static _cell *_grid_get_cell(grid_s *grid)
   gin = _grid_get_internals(grid);
   if (!gin) return NULL;
 
-    // Return RETVAL
+    // Return "_cell *"
   return gin->current;
 }
 
