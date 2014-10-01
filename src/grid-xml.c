@@ -3,7 +3,7 @@
 
     @brief Source file for grid XML data management routines
 
-    @timestamp Tue, 30 Sep 2014 14:58:44 +0000
+    @timestamp Wed, 01 Oct 2014 16:43:58 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -226,6 +226,7 @@ grid_s *grid_from_xml_node(xmlNodePtr node, grid_cell_from_xml_node func)
   if (strcmp((char *)size_node->name, "size")) return NULL;
 
   g = grid_create();
+  if (!g) return NULL;
 
   s = (char *)xmlGetProp(size_node, BAD_CAST "width");
   if (s) col = atoi(s);
@@ -233,6 +234,11 @@ grid_s *grid_from_xml_node(xmlNodePtr node, grid_cell_from_xml_node func)
   if (s) row = atoi(s);
 
   gs = grid_size_create();
+  if (!gs)
+  {
+    grid_destroy(g);
+    return NULL;
+  }
   grid_size_set(gs, row, col);
 
   grid_set_size(g, gs);
