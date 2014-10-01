@@ -23,3 +23,6 @@ timestamps:
 	@$(top_srcdir)/tools/auto-timestamp $(top_srcdir)
 
 all: timestamps all-am
+
+clean-local:
+	@(rm -f test.cmp)
