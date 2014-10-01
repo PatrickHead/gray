@@ -3,7 +3,7 @@
 
     @brief Header file for persistent reference id management
 
-    @timestamp Wed, 27 Aug 2014 07:29:58 +0000
+    @timestamp Wed, 01 Oct 2014 13:07:12 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 

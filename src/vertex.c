@@ -1,9 +1,9 @@
 /*!
     @file vertex.c
 
-    @brief SOURCE_BRIEF
+    @brief Source file for vertex data
 
-    @timestamp Wed, 20 Aug 2014 03:18:04 +0000
+    @timestamp Wed, 01 Oct 2014 15:14:00 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,9 +28,12 @@
 
     @file vertex.c
 
-    SOURCE_BRIEF
+    Source file for vertex data structure management
 
-    SOURCE_DETAILS
+    As defined herein, a vertex is a structure containing data for a point in
+    3 dimensional space.  A vertex also contains an options tag, which is
+    intended to be used either as a distinct id for the vertex, or as a
+    structure element name reference in a containing parent structure.
 
   */
 
@@ -47,14 +50,12 @@
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Create a vertex structure
 
-     FUNCTION_DETAILS
+     Allocate memory for and initialize a vertex structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
-
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "vertex_s *" success
+     @retval NULL    failure
 
   */
 
@@ -63,42 +64,50 @@ vertex_s *vertex_create(void)
   vertex_s *v;
 
   v = (vertex_s *)malloc(sizeof(vertex_s));
+  if (v) return NULL;
   memset(v, 0, sizeof(vertex_s));
 
+    // Default tag
   vertex_set_tag(v, "AUTO");
 
-    // Return RETVAL
+    // Return "vertex_s *"
   return v;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Destroy a vertex structure (using void reference)
 
-     FUNCTION_DETAILS
+     Un-allocate all memory associated with a vertex structure, using
+     a "void *" reference.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     NOTE:  This "void *" version is possibly used by generic structured data
+            handlers, such as lists, grids, etc.
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @param v    (void *) - address of grid_size_s structure
+
+     @retval NONE
 
   */
 
 void vertex_destroy_void(void *v)
 {
+    // Sanity check parameters
+  assert(v);
+
+    // Call type specific destroy function
   vertex_destroy((vertex_s *)v);
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Destroy a vertex structure
 
-     FUNCTION_DETAILS
+     Un-allocate all memory associated with a vertex structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param v    address of vertex structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -113,14 +122,14 @@ void vertex_destroy(vertex_s *v)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Copy an existing vertex structure
 
-     FUNCTION_DETAILS
+     Make a deep copy of a vertex data structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param v    pointer to existing vertex structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "vertex_s *" success
+     @retval NULL    failure
 
   */
 
@@ -136,20 +145,22 @@ vertex_s *vertex_copy(vertex_s *v)
 
   if (v->tag) nv->tag = strdup(v->tag);
 
-    // Return RETVAL
+    // Return "vertex_s *"
   return nv;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set all elements of a vertex structure
 
-     FUNCTION_DETAILS
+     A comprehensive "setter" for all elements of a vertex structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param v      pointer to existing vertex structure
+     @param x   X ordinate
+     @param y   Y ordinate
+     @param z   Z ordinate
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -167,14 +178,17 @@ void vertex_set(vertex_s *v, char *tag, double x, double y, double z)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get all elements of vertex structure
 
-     FUNCTION_DETAILS
+     A comprehensive "getter" for all elements of a vertex structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param v      pointer to an existing vertex structure
+     @param tag   pointer to string
+     @param x   pointer to double
+     @param y   pointer to double
+     @param z   pointer to double
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -195,14 +209,14 @@ void vertex_get(vertex_s *v, char **tag, double *x, double *y, double *z)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set tag of vertex
 
-     FUNCTION_DETAILS
+     Set the tag name of a vertex structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param v     pointer to existing vertex structure
+     @param tag  tag name for vertex
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -218,14 +232,13 @@ void vertex_set_tag(vertex_s *v, char *tag)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get tag from vertex
 
-     FUNCTION_DETAILS
+     Returns the tag name from a vertex structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param v   pointer to existing vertex structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "char *" success
 
   */
 
@@ -233,20 +246,20 @@ char *vertex_get_tag(vertex_s *v)
 {
     // Sanity check parameters.
   assert(v);
-    // Return RETVAL
+    // Return "char *"
   return v->tag;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set x parameter of vertex
 
-     FUNCTION_DETAILS
+     Set the x parameter of a vertex structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param v     pointer to existing vertex structure
+     @param x     X parameter
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -259,14 +272,13 @@ void vertex_set_x(vertex_s *v, double x)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get x parameter from vertex
 
-     FUNCTION_DETAILS
+     Returns the x parameter from a vertex structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param v   pointer to existing vertex structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "double" success
 
   */
 
@@ -280,14 +292,14 @@ double vertex_get_x(vertex_s *v)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set y parameter of vertex
 
-     FUNCTION_DETAILS
+     Set the y parameter of a vertex structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param v     pointer to existing vertex structure
+     @param y     Y parameter
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -300,14 +312,13 @@ void vertex_set_y(vertex_s *v, double y)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get y parameter from vertex
 
-     FUNCTION_DETAILS
+     Returns the y parameter from a vertex structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param v   pointer to existing vertex structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "double" success
 
   */
 
@@ -321,14 +332,14 @@ double vertex_get_y(vertex_s *v)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set z parameter of vertex
 
-     FUNCTION_DETAILS
+     Set the z parameter of a vertex structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param v     pointer to existing vertex structure
+     @param z     Z parameter
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -341,14 +352,13 @@ void vertex_set_z(vertex_s *v, double z)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get z parameter from vertex
 
-     FUNCTION_DETAILS
+     Returns the z parameter from a vertex structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param v   pointer to existing vertex structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "double" success
 
   */
 
@@ -362,14 +372,26 @@ double vertex_get_z(vertex_s *v)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert a string into a vertex structure.
 
-     FUNCTION_DETAILS
+     Converts a specifically formatted string into a vertex structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     The string is in the following format:
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+        [X,Y,Z]
+
+     where:
+
+       X is X parameter
+       Y is Y parameter
+       Z is Z parameter
+
+     NOTE:  "tag" will always be set to "AUTO"
+
+     @param s    pointer to formatted vertex defining string
+
+     @retval "vertex_s *" success
+     @retval NULL
 
   */
 
@@ -387,22 +409,24 @@ vertex_s *str2vertex(char *s)
 
   sscanf(s, "[%lf,%lf,%lf]", &v->x, &v->y, &v->z);
 
-    // Return RETVAL
+    // Return "vertex_s *"
   return v;
 }
 
-  // NOTE: returned string is statically allocated, and this function is NOT
-  //       re-entrant friendly.
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Converts a vertex structure to a formatted string
 
-     FUNCTION_DETAILS
+     Creates a specifically formatted string that represents the data contained
+     in a vertex structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     NOTE:  See str2vertex for definition of string
+     NOTE:  returned string is statically allocated, and this function is NOT
+            re-entrant friendly.
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @param v    pointer to existing vertex structure
+
+     @retval "char *"
 
   */
 

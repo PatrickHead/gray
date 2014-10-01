@@ -3,7 +3,7 @@
 
     @brief Header file for list data
 
-    @timestamp Wed, 27 Aug 2014 07:28:08 +0000
+    @timestamp Wed, 01 Oct 2014 16:24:59 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -115,6 +115,6 @@ void *list_dequeue(list_s * const list);
     // Stack (LIFO queue) functions
 
 void list_push(list_s * const list, void * const payload);
-void list_pop(list_s * const list);
+void *list_pop(list_s * const list);
 
 #endif // LIST_H

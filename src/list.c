@@ -3,7 +3,7 @@
 
     @brief Source file for list data
 
-    @timestamp Wed, 20 Aug 2014 03:18:04 +0000
+    @timestamp Wed, 01 Oct 2014 16:25:32 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -773,9 +773,9 @@ void list_push(list_s * const list, void * const payload)
 
   */
 
-void list_pop(list_s * const list)
+void *list_pop(list_s * const list)
 {
-  return list_queue(list);
+  return list_dequeue(list);
 }
 
   /*!

@@ -3,7 +3,7 @@
 
     @brief Source file for sieve type filter mode management
 
-    @timestamp Wed, 20 Aug 2014 03:18:04 +0000
+    @timestamp Wed, 01 Oct 2014 13:41:50 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,7 +28,7 @@
 
     @file sieve.c
 
-    @brief Source file for sieve type filter mode management
+    Source file for sieve type filter mode management
 
     A sieve is a special type of STDIO filter mechanism.  A sieve uses the
     doc-list facility to manage a list of document parts parsed from any STDIO

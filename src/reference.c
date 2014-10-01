@@ -3,7 +3,7 @@
 
     @brief Source file for persistent reference id management
 
-    @timestamp Wed, 20 Aug 2014 03:18:04 +0000
+    @timestamp Wed, 01 Oct 2014 16:31:35 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -39,6 +39,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
   // Project related headers
 

@@ -1,9 +1,9 @@
 /*!
     @file vertex-xml.c
 
-    @brief SOURCE_BRIEF
+    @brief Source file for vertex XML data
 
-    @timestamp Wed, 20 Aug 2014 03:18:04 +0000
+    @timestamp Wed, 01 Oct 2014 16:30:13 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,9 +28,12 @@
 
     @file vertex-xml.c
 
-    SOURCE_BRIEF
+    Source file for managing vertex data to/from XML format.
 
-    SOURCE_DETAILS
+    XML Utility functions for converting vertex data to/from XML format.
+
+    Also includes a stream sieve function for building filter pipe lines on
+    STDIO that can capture or edit existing vertex data in XML format.
 
   */
 
@@ -51,18 +54,20 @@
 
 #include "vertex-xml.h"
 
+  // Common constants 
+
 #define MAX_SN 40
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert vertex data to XML document
 
-     FUNCTION_DETAILS
+     Converts data in vertex structure to XML document format.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param v    pointer to vertex data structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "xmlDocPtr" success
+     @retval NULL    failure
 
   */
 
@@ -75,25 +80,31 @@ xmlDocPtr vertex_to_xml_doc(vertex_s *v)
   assert(v);
 
   doc = xmlNewDoc(BAD_CAST "1.0");
+  if (!doc) return NULL;
 
   root = vertex_to_xml_node(v);
+  if (!root)
+  {
+    xmlFreeDoc(doc);
+    return NULL;
+  }
 
   xmlDocSetRootElement(doc, root);
 
-    // Return RETVAL
+    // Return "xmlDocPtr"
   return doc;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert vertex data to XML node
 
-     FUNCTION_DETAILS
+     Converts data in vertex structure to XML node format.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param v    pointer to vertex data structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "xmlNodePtr" success
+     @retval NULL    failure
 
   */
 
@@ -120,20 +131,20 @@ xmlNodePtr vertex_to_xml_node(vertex_s *v)
   snprintf(sn, MAX_SN, "%f", v->z);
   xmlNewProp(node, BAD_CAST "z", BAD_CAST sn);
 
-    // Return RETVAL
+    // Return "xmlNodePtr"
   return node;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Returns root node of XML document containing vertex XML data
 
-     FUNCTION_DETAILS
+     Finds and returns the XML root node of a document containin vertex data.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param doc    pointer to xmlDoc
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "xmlNodePtr" success
+     @retval NULL    failure
 
   */
 
@@ -141,20 +152,20 @@ xmlNodePtr vertex_root_node(xmlDocPtr doc)
 {
     // Sanity check parameters.
   assert(doc);
-    // Return RETVAL
+    // Return "xmlNodePtr"
   return xmlDocGetRootElement(doc);
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert XML vertex document to vertex data structure
 
-     FUNCTION_DETAILS
+     Converts an XML document containing vertex data to data structure
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param doc    pointer to xmlDoc
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "vertex_s *" success
+     @retval NULL    failure
 
   */
 
@@ -166,21 +177,22 @@ vertex_s *vertex_from_xml_doc(xmlDocPtr doc)
   assert(doc);
 
   root = vertex_root_node(doc);
+  if (!root) return NULL;
 
-    // Return RETVAL
+    // Return "vertex_s *"
   return vertex_from_xml_node(root);
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert XML vertex node to vertex data structure
 
-     FUNCTION_DETAILS
+     Converts an XML node containing vertex data to data structure
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param doc    pointer to xmlNode
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "vertex_s *" success
+     @retval NULL    failure
 
   */
 
@@ -195,6 +207,7 @@ vertex_s *vertex_from_xml_node(xmlNodePtr node)
   if (strcmp((char*)node->name, "vertex")) return NULL;
 
   v = vertex_create();
+  if (!v) return NULL;
 
   s = (char *)xmlGetProp(node, BAD_CAST "tag");
   if (s)
@@ -212,20 +225,26 @@ vertex_s *vertex_from_xml_node(xmlNodePtr node)
   if (s)
     v->z = strtod(s, NULL);
   
-    // Return RETVAL
+    // Return "vertex_s *"
   return v;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief STDIO sieve for handling XML vertex data in data stream
 
-     FUNCTION_DETAILS
+     Sieve which captures the first XML document in input stream that contains
+     vertex data when sieve process mode is set to "edit".  All other XML
+     documents in stream are simply emitted back to stream in the order that
+     they appear.   This includes any subsequent documents containing vertex
+     data, and also the first document containing vertex data if the sieve
+     process mode is set to "passthru".
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param infile    "FILE *" to input stream
+     @param outfile   "FILE *" to output stream
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "vertex_s *" success
+     @retval NULL    failure or no matching document
 
   */
 
@@ -289,7 +308,7 @@ vertex_s *vertex_sieve(FILE *infile, FILE *outfile)
     }
   }
 
-    // Return RETVAL
+    // Return "vertex_s *"
   return v;
 }
 

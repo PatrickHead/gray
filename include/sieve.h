@@ -3,7 +3,7 @@
 
     @brief Header file for sieve type filter mode management
 
-    @timestamp Wed, 27 Aug 2014 07:36:54 +0000
+    @timestamp Wed, 01 Oct 2014 13:10:49 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 

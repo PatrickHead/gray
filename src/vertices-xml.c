@@ -1,9 +1,9 @@
 /*!
     @file vertices-xml.c
 
-    @brief SOURCE_BRIEF
+    @brief Source file for vertices data
 
-    @timestamp Wed, 20 Aug 2014 03:18:04 +0000
+    @timestamp Wed, 01 Oct 2014 16:30:20 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,9 +28,13 @@
 
     @file vertices-xml.c
 
-    SOURCE_BRIEF
+    Header file for managing list of vertices data to/from XML format.
 
-    SOURCE_DETAILS
+    XML Utility functions for converting list of vertices data to/from
+    XML format.
+
+    Also includes a stream sieve function for building filter pipe lines on
+    STDIO that can capture or edit existing vertices data in XML format.
 
   */
 
@@ -51,18 +55,20 @@
 #include "sieve.h"
 #include "vertices-xml.h"
 
+  // Common constants
+
 #define MAX_SN 40
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert vertices data to XML document
 
-     FUNCTION_DETAILS
+     Converts data in vertices structure to XML document format.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param vs    pointer to vertices data structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "xmlDocPtr" success
+     @retval NULL    failure
 
   */
 
@@ -75,25 +81,31 @@ xmlDocPtr vertices_to_xml_doc(vertices_s *vs)
   assert(vs);
 
   doc = xmlNewDoc(BAD_CAST "1.0");
+  if (!doc) return NULL;
 
   root = vertices_to_xml_node(vs);
+  if (!root)
+  {
+    xmlFreeDoc(doc);
+    return NULL;
+  }
 
   xmlDocSetRootElement(doc, root);
 
-    // Return RETVAL
+    // Return "xmlDocPtr"
   return doc;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert vertices data to XML node
 
-     FUNCTION_DETAILS
+     Converts data in vertices structure to XML node format.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param v    pointer to vertices data structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "xmlNodePtr" success
+     @retval NULL    failure
 
   */
 
@@ -124,20 +136,20 @@ xmlNodePtr vertices_to_xml_node(vertices_s *vs)
     }
   }
 
-    // Return RETVAL
+    // Return "xmlNodePtr"
   return vsn;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Returns root node of XML document containing vertices XML data
 
-     FUNCTION_DETAILS
+     Finds and returns the XML root node of a document containin vertices data.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param doc    pointer to xmlDoc
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "xmlNodePtr" success
+     @retval NULL    failure
 
   */
 
@@ -151,14 +163,14 @@ xmlNodePtr vertices_root_node(xmlDocPtr doc)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert XML vertices document to vertices data structure
 
-     FUNCTION_DETAILS
+     Converts an XML document containing vertices data to data structure
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param doc    pointer to xmlDoc
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "vertices_s *" success
+     @retval NULL    failure
 
   */
 
@@ -170,6 +182,7 @@ vertices_s *vertices_from_xml_doc(xmlDocPtr doc)
   assert(doc);
 
   root = vertices_root_node(doc);
+  if (!root) return NULL;
 
     // Return RETVAL
   return vertices_from_xml_node(root);
@@ -177,14 +190,14 @@ vertices_s *vertices_from_xml_doc(xmlDocPtr doc)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert XML vertices node to vertices data structure
 
-     FUNCTION_DETAILS
+     Converts an XML node containing vertices data to data structure
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param doc    pointer to xmlNode
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "vertices_s *" success
+     @retval NULL    failure
 
   */
 
@@ -214,20 +227,26 @@ vertices_s *vertices_from_xml_node(xmlNodePtr node)
     }
   }
 
-    // Return RETVAL
+    // Return "vertices_s *"
   return vs;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief STDIO sieve for handling XML vertices data in data stream
 
-     FUNCTION_DETAILS
+     Sieve which captures the first XML document in input stream that contains
+     vertices data when sieve process mode is set to "edit".  All other XML
+     documents in stream are simply emitted back to stream in the order that
+     they appear.   This includes any subsequent documents containing vertices
+     data, and also the first document containing vertices data if the sieve
+     process mode is set to "passthru".
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param infile    "FILE *" to input stream
+     @param outfile   "FILE *" to output stream
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "vertices_s *" success
+     @retval NULL    failure or no matching document
 
   */
 
@@ -300,7 +319,7 @@ vertices_s *vertices_sieve(FILE *infile, FILE *outfile)
     }
   }
 
-    // Return RETVAL
+    // Return "vertices_s *"
   return vs;
 }
 

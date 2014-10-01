@@ -1,9 +1,9 @@
 /*!
     @file xml-extensions.c
 
-    @brief SOURCE_BRIEF
+    @brief Source file for libxml2 extensions
 
-    @timestamp Wed, 20 Aug 2014 03:18:04 +0000
+    @timestamp Wed, 01 Oct 2014 13:44:54 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,9 +28,14 @@
 
     @file xml-extensions.c
 
-    SOURCE_BRIEF
+    Source file for libxml2 extensions
 
-    SOURCE_DETAILS
+    Contains functions to extend the function library supplied in libxml2
+    package.
+
+    Currently contains:
+      xmlDocFormatDumpEnc() - save an entire XML document with formatting
+                              and encoding information.
 
   */
 
@@ -42,14 +47,18 @@
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Save XML document with formatting and encoding
 
-     FUNCTION_DETAILS
+     Save an XML document using formatting and encoding.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     NOTE:  See official libxml2 API for details on encoding and format
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @param f    open file to save to
+     @param doc    pointer to XML document to save
+     @param txt_encoding    text encoding for saved document
+     @param format    format of saved document
+
+     @retval NONE
 
   */
 

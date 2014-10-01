@@ -1,9 +1,9 @@
 /*!
     @file vertices.c
 
-    @brief SOURCE_BRIEF
+    @brief Source file for list of vertices data
 
-    @timestamp Wed, 20 Aug 2014 03:18:04 +0000
+    @timestamp Wed, 01 Oct 2014 15:24:09 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -28,9 +28,11 @@
 
     @file vertices.c
 
-    SOURCE_BRIEF
+    Source file for list of vertices (see vertex.h) data management functions
 
-    SOURCE_DETAILS
+    This module provides functions for managing a list of vertex data
+    structures.  Base structure management functions are provided, as well
+    as functions to add to a list, and copy an entire list.
 
   */
 
@@ -46,14 +48,12 @@
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Create a vertices structure
 
-     FUNCTION_DETAILS
+     Allocate memory for and initialize a vertices structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
-
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "vertices_s *" success
+     @retval NULL    failure
 
   */
 
@@ -62,25 +62,25 @@ vertices_s *vertices_create(void)
   vertices_s *vs;
 
   vs = (vertices_s *)malloc(sizeof(vertices_s));
+  if (!vs) return NULL;
   memset(vs, 0, sizeof(vertices_s));
 
   vs->vertices = list_create();
   list_set_free(vs->vertices, vertex_destroy_void);
 
-    // Return RETVAL
+    // Return "vertices_s *"
   return vs;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Destroy a vertices structure
 
-     FUNCTION_DETAILS
+     Un-allocate all memory associated with a vertices structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param vs    address of vertices structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -96,14 +96,14 @@ void vertices_destroy(vertices_s *vs)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Copy an existing vertices structure
 
-     FUNCTION_DETAILS
+     Make a deep copy of a vertices data structure.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param vs    pointer to existing vertices structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "vertices_s *" success
+     @retval NULL    failure
 
   */
 
@@ -131,20 +131,20 @@ vertices_s *vertices_copy(vertices_s *vs)
     }
   }
 
-    // Return RETVAL
+    // Return "vertices_s *"
   return nvs;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Add vertex to vertices
 
-     FUNCTION_DETAILS
+     Add a new vertex item to a vertices list.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param vs    pointer to existing vertices
+     @param v    pointer to vertex to add
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
