@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src include tests tools
+SUBDIRS = src include tests tools doc
 
 EXTRA_DIST = AUTHORS ChangeLog COPYING COPYING_DOCUMENTATION INSTALL NEWS README
 

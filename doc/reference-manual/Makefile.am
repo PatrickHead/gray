@@ -28,11 +28,11 @@ install-data-local: install-pdf-local install-html-local
 
 install-pdf-local:
 	@mkdir -p $(docdir)
-	@cp latex/refman.pdf $(docdir)/egg-internals.pdf
+	@cp latex/refman.pdf $(docdir)/libgray-reference.pdf
 
 install-html-local:
 	@mkdir -p $(docdir)
 	@cp -r html $(docdir)
 
 uninstall-local:
-	@rm -rf $(docdir)/egg-internals.pdf $(docdir)/html
+	@rm -rf $(docdir)/libgray-reference.pdf $(docdir)/html
