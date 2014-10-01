@@ -46,7 +46,7 @@
 #include "grid.h"
 
   /*!
-    brief enum defining grid API commands
+    @brief enum defining grid API commands
   */
 
 typedef enum
@@ -75,49 +75,49 @@ typedef enum
 } grid_api_command_t;
 
   /*!
-    brief Structure to hold grid API status information
+    @brief Structure to hold grid API status information
   */
 
 typedef struct grid_api_status
 {
-    /*! brief Status code */
+    /*! @brief Status code */
   int code;
-    /*! brief Current number of rows in grid */
+    /*! @brief Current number of rows in grid */
   int rows;
-    /*! brief Current number of columns in grid */
+    /*! @brief Current number of columns in grid */
   int columns;
-    /*! brief Current "cursor" location (x,y address) in grid */
+    /*! @brief Current "cursor" location (x,y address) in grid */
   vertex_s *location;
-    /*! brief Pointer to possible returned status data */
+    /*! @brief Pointer to possible returned status data */
   void *data;
 } grid_api_status_s;
 
   /*!
-    brief Union of data types used by grid_api_do()
+    @brief Union of data types used by grid_api_do()
   */
 
 typedef union
 {
-    /*! brief Command repeat count */
+    /*! @brief Command repeat count */
   int repeat;
-    /*! brief x,y address */
+    /*! @brief x,y address */
   vertex_s *location;
-    /*! brief Cell data */
+    /*! @brief Cell data */
   void *data;
 } grid_api_data_u;
 
   /*!
-    brief TYPEDEF_BRIEF
+    @brief Grid data structure
   */
 
 typedef struct grid_api
 {
-    /*! brief Pointer to internal API information (encapsulates interface) */
+    /*! @brief Pointer to internal API information (encapsulates interface) */
   void *_internals;
 } grid_api_s;
 
   /*!
-    brief Function templates for user defined data and data free functions
+    @brief Function templates for user defined data and data free functions
   */
 
 typedef void *(*grid_api_data_func)(void *data);

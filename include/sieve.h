@@ -31,9 +31,9 @@
     Header file for sieve type filter mode management
 
     A sieve is a special type of STDIO filter mechanism.  A sieve uses the
-    doc-list facility to manage a list of documents parts parsed from any STDIO
+    doc-list facility to manage a list of document parts parsed from any STDIO
     stream, and to mark those of interest to the user.  This module is for
-    management the mode of the sieve, either passthru, or edit.  While it is
+    managing the mode of the sieve, either passthru, or edit.  While it is
     entirely up to the user to determine for what the modes will be used, the
     intent is for edit mode to pick the first "kept" document and make changes
     to it, then pass it on to the STDIO output stream, while passthru mode is

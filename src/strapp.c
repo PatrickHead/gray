@@ -28,38 +28,11 @@
 
     @file strapp.c
 
-    SOURCE_BRIEF
+    Source code for strapp(), a string append function.
 
-    SOURCE_DETAILS
+    ( See function documentation for details. )
 
   */
-
-/*!
-    @file strapp.c
-
-    @brief Source code for string append function.
-    @brief In the spirit of the standard C string functions.
-
-    @timestamp Wed, 20 Aug 2014 03:18:04 +0000
-
-    @author Patrick Head  mailto:patrickhead@gmail.com
-
-    @copyright Copyright (C) 2013  Patrick Head
-
-    @license
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.@n
-    @n
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.@n
-    @n
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 
   // Required system headers
 
@@ -84,24 +57,10 @@
 
   */
 
-  /*!
-
-     @brief FUNCTION_BRIEF
-
-     FUNCTION_DETAILS
-
-     @param PARMNAME    PARM_DESCRIPTION
-
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
-
-  */
-
 char *strapp(char *s, char *a)
 {
   if (!a)
-      // Return RETVAL
-  return s;
+    return s;
 
   if (!s)
   {
@@ -115,7 +74,7 @@ char *strapp(char *s, char *a)
 
   strcat(s, a);
 
-    // Return RETVAL
+    // Return "char *"
   return s;
 }
 

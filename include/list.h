@@ -37,6 +37,7 @@
     provided to insert/delete/change list elements, search for list items by
     reference and data value.  Also, functions are provided for queue and stack
     operations.
+
   */
 
 #ifndef LIST_H
@@ -114,6 +115,6 @@ void *list_dequeue(list_s * const list);
     // Stack (LIFO queue) functions
 
 void list_push(list_s * const list, void * const payload);
-#define list_pop(l) list_dequeue(l)
+void list_pop(list_s * const list);
 
 #endif // LIST_H

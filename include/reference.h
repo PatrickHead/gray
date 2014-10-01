@@ -28,7 +28,7 @@
 
     @file reference.h
 
-    Header file for persistent reference id management
+    @brief Header file for persistent reference id management
 
     A simple, per user, persistent object ID management facility
 
@@ -39,6 +39,6 @@
 
   // Reference functions prototypes
 
-int reference_new(void);
+int reference_new(char *filename);
 
 #endif //  REFERENCE_H

@@ -91,7 +91,7 @@ typedef struct
   grid_payload_free grid_pl_free;
 } _grid_internals;
 
-  // INTERNAL: utility functions for module
+  // INTERNAL: utility function prototypes for module
 static _cell *_cell_new(void *pl);
 static void _cell_free(_cell *c, grid_payload_free fpl);
 

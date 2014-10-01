@@ -1,7 +1,7 @@
 /*!
     @file reference.c
 
-    @brief SOURCE_BRIEF
+    @brief Source file for persistent reference id management
 
     @timestamp Wed, 20 Aug 2014 03:18:04 +0000
 
@@ -28,9 +28,10 @@
 
     @file reference.c
 
-    SOURCE_BRIEF
+    @brief Source file for persistent reference id management
 
-    SOURCE_DETAILS
+    A simple, per user, persistent object ID management facility.
+
 
   */
 
@@ -45,38 +46,41 @@
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Create/update a reference counter
 
-     FUNCTION_DETAILS
+     Increments and returns a new reference number store in a persistent
+     reference counter file.  Will create a new reference counter file if
+     the named file does not already exist.  The user supplied filename is
+     any valid filename, or relative path.  All reference counter files are
+     stored under the current user's home directory.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param filename    string containing the reference counter file name
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "int" success
 
   */
 
-int reference_new(void)
+int reference_new(char *filename)
 {
   FILE *f;
   char *home;
   char ref_name[2048];
   int ref;
 
+  assert(filename);
+
   home = getenv("HOME");
-  snprintf(ref_name, 2048, "%s/.blue", home);
+  snprintf(ref_name, 2048, "%s/%s", home, filename);
 
   f = fopen(ref_name, "r");
   if (!f)
   {
     f = fopen(ref_name, "w");
     if (!f)
-        // Return RETVAL
-  return 0;
+      return 0;
     fprintf(f, "1\n");
     fclose(f);
-      // Return RETVAL
-  return 1;
+    return 1;
   }
     
   fscanf(f, "%d", &ref);
@@ -91,7 +95,7 @@ int reference_new(void)
     fclose(f);
   }
   
-    // Return RETVAL
+    // Return int
   return ref;
 }
 

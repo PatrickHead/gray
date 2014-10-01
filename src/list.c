@@ -1,7 +1,7 @@
 /*!
     @file list.c
 
-    @brief SOURCE_BRIEF
+    @brief Source file for list data
 
     @timestamp Wed, 20 Aug 2014 03:18:04 +0000
 
@@ -26,11 +26,15 @@
 
   /*!
 
-    @file list.c
+    Source file for linked list structure data management
 
-    SOURCE_BRIEF
+    This module provides a generic management interface for the classic double
+    linked list data structure.
 
-    SOURCE_DETAILS
+    In addition to the global list management functions, functions are also
+    provided to insert/delete/change list elements, search for list items by
+    reference and data value.  Also, functions are provided for queue and stack
+    operations.
 
   */
 
@@ -45,29 +49,38 @@
 #include "list.h"
 
   /*!
-    brief TYPEDEF_BRIEF
+    @brief INTERNAL: list object(item) structure
   */
 
 typedef struct _list_obj
 {
-  struct _list_obj *p;  // Previous item in list
-  struct _list_obj *n;  // Next item in list
-  void *_pl;          // Payload
+    /*! @brief previous item in list */
+  struct _list_obj *p;
+    /*! @brief next item in list */
+  struct _list_obj *n;
+    /*! @brief data payload */
+  void *_pl;
 } _list_obj;
 
   /*!
-    brief TYPEDEF_BRIEF
+    @brief INTERNAL: list internals structure
   */
 
 typedef struct
 {
-  _list_obj *h;                  // Head of list
-  _list_obj *c;                  // Cursor (current item in list)
-  _list_obj *t;                  // Tail of list
-  int len;                     // Number of items in the list
-  list_payload_free list_pl_free;  // Memory de-alistocation function.  Can be
-                               //   payload specific.
+    /*! @brief head of list */
+  _list_obj *h;
+    /*! @brief cursor, current in list */
+  _list_obj *c;
+    /*! @brief tail of list */
+  _list_obj *t;
+    /*! @brief number of items in list */
+  int len;
+    /*! @brief list object data payload de-allocation function */
+  list_payload_free list_pl_free;
 } _list_internals;
+
+  // INTERNAL: utility function prototypes for module
 
 static _list_obj *_list_obj_create(void * const pl);
 static void *_list_obj_free(_list_obj *const lo);
@@ -78,43 +91,52 @@ static _list_internals* _list_get_internals(list_s * const l);
 static void *_list_get_payload(_list_obj *const lo);
 static _list_obj *_list_find_by_reference(list_s * const l, void * const pl);
 
-  // New creates a new list
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Create a new list
 
-     FUNCTION_DETAILS
+     Allocates memory for a new list structure, creating all necessary
+     components, and setting reasonable defaults.
 
-     @param PARMNAME    PARM_DESCRIPTION
-
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "list_s *" success
+     @retval NULL    failure
 
   */
 
 list_s *list_create(void)
 {
   list_s *l;
+
   l = malloc(sizeof(list_s));
+  if (!l) return NULL;
   memset(l, 0, sizeof(list_s));
+
   l->internals = (void*)malloc(sizeof(_list_internals));
+  if (!l->internals)
+  {
+    free(l);
+    return NULL;
+  }
   memset(l->internals, 0, sizeof(_list_internals));
+
+    // Set initial payload data free function to system free()
   list_set_free(l, free);
-    // Return RETVAL
+
+    // Return "list_s *"
   return l;
 }
 
-  // Destroy removes alist items from the list AND de-alistocates the payloads.
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Destroy a list
 
-     FUNCTION_DETAILS
+     De-allocate all allocated memory associated with a list, including
+     the payload data.  If the list payload data free function is set to NULL,
+     then the payload data is left intact.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param list    pointer to existing list
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -147,18 +169,16 @@ void list_destroy(list_s * const list)
   free(list);
 }
 
-  // Free removes alist the items from the list, but does NOT de-alistocate the
-  // payloads.
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Free a list
 
-     FUNCTION_DETAILS
+     De-allocate all allocated memory associated with a list, leaving
+     the payload data intact.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param list    pointer to existing list
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -188,14 +208,14 @@ void list_free(list_s * const list)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set payload data free function
 
-     FUNCTION_DETAILS
+     Set payload data free function for list to user defined function.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param list    pointer to existing list
+     @param func    pointer to user defined function
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -209,21 +229,17 @@ void list_set_free(list_s * const list, list_payload_free func)
 
   lin = _list_get_internals(list);
   if (lin) lin->list_pl_free = func;
-
-    // Return RETVAL
-  return;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get count of items in list
 
-     FUNCTION_DETAILS
+     Return the count of items in a list.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param list    pointer to existing list
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "int" always
 
   */
 
@@ -236,25 +252,30 @@ int list_len(list_s * const list)
   lin = _list_get_internals(list);
   if (lin) return lin->len;
 
-    // Return RETVAL
   return 0;
 }
 
-  // Insert adds a new item to the list.
-  // whence:
-  //   HEAD - ALWAYS before head, ALWAYS becomes new head
-  //   CURR - ALWAYS before current, MAY become new head
-  //   TAIL - ALWAYS after tail
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Add item to list
 
-     FUNCTION_DETAILS
+     Add a new element to a list.  User must supply a pointer to the payload
+     data, and a value for the whence parameter.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     The following table list the possible values for whence:
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     Value              Meaning
+     -----              ----------------------------------
+
+     HEAD               ALWAYS before head of list
+     CURR               ALWAYS before current item in list
+     TAIL               ALWAYS after last item in list
+
+     @param list    pointer to existing list
+     @param payload    pointer to payload data to add
+     @param whence    (see table above)
+
+     @retval NONE
 
   */
 
@@ -264,8 +285,8 @@ void list_insert(list_s * const list, void * const payload, void * const whence)
   _list_obj *lo;
   _list_obj *new;
 
-  if (!list) return;
     // Sanity check parameters.
+  assert(list);
   assert(payload);
 
   lin = _list_get_internals(list);
@@ -285,13 +306,13 @@ void list_insert(list_s * const list, void * const payload, void * const whence)
       ++lin->len;
       lin->c = new;
       break;
+
     case CURR:
       if (!lin->c)
       {
         _list_obj_free(new);
         list_insert(list, payload, HEAD);
-          // Return RETVAL
-  return;
+        return;
       }
       new->n = lin->c;
       new->p = lin->c->p;
@@ -301,6 +322,7 @@ void list_insert(list_s * const list, void * const payload, void * const whence)
       ++lin->len;
       lin->c = new;
       break;
+
     case TAIL:
       new->n = NULL;
       new->p = lin->t;
@@ -310,34 +332,41 @@ void list_insert(list_s * const list, void * const payload, void * const whence)
       ++lin->len;
       lin->c = new;
       break;
+
     default:
       lo = _list_find_by_reference(list, whence);
       if (!lo)
       {
         _list_obj_free(new);
-          // Return RETVAL
-  return;
+        return;
       }
       lin->c = lo;
       list_insert(list, payload, (void*)CURR);
       break;
   }
-
-    // Return RETVAL
-  return;
 }
 
-  // Delete removes an item from the list AND de-alistocates the payload.
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Delete item from a list
 
-     FUNCTION_DETAILS
+     Remove item from a list and de-allocate the payload data.  Must supply
+     a value for whence.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     The following table list the possible values for whence:
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     Value              Meaning
+     -----              ----------------------------------
+
+     HEAD               ALWAYS before head of list
+     CURR               ALWAYS before current item in list
+     TAIL               ALWAYS after last item in list
+     (other)            ALWAYS before the list item that "other" points to
+
+     @param list    pointer to existing list
+     @param whence    (see table above)
+
+     @retval NONE
 
   */
 
@@ -346,7 +375,7 @@ void list_delete(list_s * const list, void * const whence)
   void *pl = NULL;
   list_payload_free fpl = NULL;
 
-  if (!list) return;
+  assert(list);
 
   pl = list_remove(list, whence);
   if (pl)
@@ -354,23 +383,22 @@ void list_delete(list_s * const list, void * const whence)
     fpl = _list_get_pl_free(list);
     if (fpl) fpl(pl);
   }
-
-    // Return RETVAL
-  return;
 }
 
-  // Replace puts a new payload in place of an existing payload.  No memory
-  // de-alistocation occurs on the original payload.
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Replace payload data of list item
 
-     FUNCTION_DETAILS
+     Replace the payload data of a list item.  User must supply a pointer to
+     the payload data, and a value for the whence parameter.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     NOTE:  The original payload data is NOT de-allocated.
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @param list    pointer to existing list
+     @param payload    pointer to replacement payload data
+     @param whence    ( see list_delete() )
+
+     @retval NONE
 
   */
 
@@ -407,22 +435,18 @@ void list_replace(list_s * const list, void * const payload, void * const whence
     lo->_pl = payload;
     lin->c = lo;
   }
-
-    // Return RETVAL
-  return;
 }
 
-  // Remove removes an item from the list, but does NOT de-allocate the payload.
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Remove item from a list, leave payload data intact
 
-     FUNCTION_DETAILS
+     Remove item from a list.  Do NOT de-allocate the payload data.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param list    pointer to existing list
+     @param whence    ( see list_delete() )
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -482,21 +506,23 @@ void *list_remove(list_s * const list, void * const whence)
     // Unalistocate the object
   _list_obj_free(lo);
 
-    // Return the payload
-    // Return RETVAL
+    // Return "void *"
   return pl;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Find a list item by reference
 
-     FUNCTION_DETAILS
+     Find an item in a list.  A match exists when the user supplied
+     "reference" parameter is equal to the address of the list item's
+     payload data.  The payload data pointer is returned on a match.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param list    pointer to exising list
+     @param reference    pointer to search for in list
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -511,20 +537,24 @@ void *list_find_by_reference(list_s * const list, void * const reference)
   lo = _list_find_by_reference(list, reference);
   if (lo) return lo->_pl;
 
-    // Return RETVAL
   return NULL;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Find a list item by value
 
-     FUNCTION_DETAILS
+     Find an item in a list.  A match exists when contents of the user
+     supplied "value" parameter is equal to the contents of a list item's
+     payload data.  The payload data is returned on a match.  The user must
+     supply a payload data comparison function.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param list    pointer to exising list
+     @param value    pointer to value to search for in list
+     @param func    user supplied payload data comparison function
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -542,20 +572,19 @@ void *list_find_by_value(list_s * const list,
   for (pl = list_head(list); pl; pl = list_next(list))
     if (!func(value, pl)) return pl;
 
-    // Return RETVAL
   return NULL;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get head of list
 
-     FUNCTION_DETAILS
+     Return payload data for list item at head of list.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param list    pointer to exising list
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -563,31 +592,29 @@ void *list_head(list_s * const list)
 {
   _list_internals *lin;
 
-  if (!list) return NULL;
+  assert(list);
 
   lin = _list_get_internals(list);
   if (lin)
   {
     lin->c = lin->h;
     if (lin->c)
-        // Return RETVAL
-  return _list_get_payload(lin->c);
+      return _list_get_payload(lin->c);
   }
 
-    // Return RETVAL
   return NULL;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get current list item
 
-     FUNCTION_DETAILS
+     Return payload data for current item in a list.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param list    pointer to existing list
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -595,30 +622,28 @@ void *list_curr(list_s * const list)
 {
   _list_internals *lin;
 
-  if (!list) return NULL;
+  assert(list);
 
   lin = _list_get_internals(list);
   if (lin)
   {
     if (lin->c)
-        // Return RETVAL
-  return _list_get_payload(lin->c);
+      return _list_get_payload(lin->c);
   }
 
-    // Return RETVAL
   return NULL;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get tail of list
 
-     FUNCTION_DETAILS
+     Return the payload data of the last item in a list.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param list    pointer to existing list
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -626,31 +651,30 @@ void *list_tail(list_s * const list)
 {
   _list_internals *lin;
 
-  if (!list) return NULL;
+  assert(list);
 
   lin = _list_get_internals(list);
   if (lin)
   {
     lin->c = lin->t;
     if (lin->c)
-        // Return RETVAL
-  return _list_get_payload(lin->c);
+      return _list_get_payload(lin->c);
   }
 
-    // Return RETVAL
   return NULL;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get next item of list
 
-     FUNCTION_DETAILS
+     Return the payload data for the next item in a list.  The cursor, or
+     current location, of the list is also moved to the next item.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param list    pointer to existing list
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -659,7 +683,7 @@ void *list_next(list_s * const list)
   _list_internals *lin;
   void *pl;
 
-  if (!list) return NULL;
+  assert(list);
 
   lin = _list_get_internals(list);
   if (lin->c)
@@ -668,25 +692,24 @@ void *list_next(list_s * const list)
     {
       lin->c = lin->c->n;
       pl = _list_get_payload(lin->c);
-        // Return RETVAL
-  return pl;
+        return pl;
     }
   }
 
-    // Return RETVAL
   return NULL;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get previous item of list
 
-     FUNCTION_DETAILS
+     Return the payload data for the previous item in a list.  The cursor, or
+     current location, of the list is also moved to the previous item.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param list    pointer to existing list
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "void *" success
+     @retval NULL    failure
 
   */
 
@@ -704,27 +727,148 @@ void *list_prev(list_s * const list)
     {
       lin->c = lin->c->p;
       pl = _list_get_payload(lin->c);
-        // Return RETVAL
-  return pl;
+        return pl;
     }
   }
 
-    // Return RETVAL
   return NULL;
 }
+
+  /*!
+
+     @brief Push item onto head of list
+
+     Push a new list item onto the head of a list.
+
+     NOTE:  This is a wrapper for list_insert
+
+     @param list    pointer to exising list
+     @param payload    pointer to payload data to insert into list
+
+     @retval NONE
+
+  */
+
+void list_push(list_s * const list, void * const payload)
+{
+    // Sanity check parameters.
+  assert(list);
+  assert(payload);
+
+  list_insert(list, payload, (void*)HEAD);
+}
+
+  /*!
+
+     @brief Get and remove item from head of list
+
+     Return the payload data and remove the list item from the head of a list.
+
+     NOTE:  This is a wrapper for list_dequeue
+
+     @param list    pointer to existing list
+
+     @retval "void *" success
+     @retval NULL    failure
+
+  */
+
+void list_pop(list_s * const list)
+{
+  return list_queue(list);
+}
+
+  /*!
+
+     @brief Add item to tail of list
+
+     Append a new list item to end of a list.
+
+     NOTE:  This is a wrapper for list_insert
+
+     @param list    pointer to exising list
+     @param payload    pointer to payload data to insert into list
+
+     @retval NONE
+
+  */
+
+void list_queue(list_s * const list, void * const payload)
+{
+    // Sanity check parameters.
+  assert(list);
+  assert(payload);
+
+  list_insert(list, payload, (void*)TAIL);
+}
+
+  /*!
+
+     @brief Get and remove item from head of list
+
+     Return the payload data and remove the list item from the head of a list.
+
+     @param list    pointer to existing list
+
+     @retval "void *" success
+     @retval NULL    failure
+
+  */
+
+void *list_dequeue(list_s * const list)
+{
+  void *pl;
+
+    // Sanity check parameters.
+  assert(list);
+
+  pl = list_head(list);
+  list_remove(list, (void*)HEAD);
+
+    // Return "void *"
+  return pl;
+}
+
+  /*!
+
+     @brief INTERNAL:  Create a new list object
+
+     Allocates and initializes all components of a list object structure.
+
+     @param pl    pointer to payload data
+
+     @retval "_list_obj *" success
+     @retval NULL    failure
+
+  */
 
 static _list_obj *_list_obj_create(void * const pl)
 {
   _list_obj *new;
 
   new = (_list_obj*)malloc(sizeof(_list_obj));
+  if (!new) return NULL;
   memset(new, 0, sizeof(_list_obj));
 
   new->_pl = pl;
 
-    // Return RETVAL
+    // Return "_list_obj *"
   return new;
 }
+
+  /*!
+
+     @brief INTERNAL:  Free a list object, leaving payload intact
+
+     De-allocates memory associated with a list object structure.  Payload data
+     is left intact, and returned to user.
+
+     @param lo    pointer to list object structure
+
+     @retval "void *" success
+     @retval NULL    failure
+
+  */
 
 static void *_list_obj_free(_list_obj *const lo)
 {
@@ -737,9 +881,23 @@ static void *_list_obj_free(_list_obj *const lo)
 
   free(lo);
 
-    // Return RETVAL
+    // Return "void *"
   return pl;
 }
+
+  /*!
+
+     @brief INTERNAL:  Destroy a list object
+
+     De-allocates memory associated with a list object structure, including
+     payload data.
+
+     @param lo    pointer to list object structure
+     @param fpl    payload data free function
+
+     @retval NONE
+
+  */
 
 static void _list_obj_destroy(_list_obj *const lo, list_payload_free fpl)
 {
@@ -754,6 +912,19 @@ static void _list_obj_destroy(_list_obj *const lo, list_payload_free fpl)
   if (pl) fpl(pl);
 }
 
+  /*!
+
+     @brief INTERNAL:  Get payload data free function
+
+     Return the payload data free function from a list.
+
+     @param l    pointer to existing list
+
+     @retval "list_payload_free *" success
+     @retval NULL    failure
+
+  */
+
 static list_payload_free _list_get_pl_free(list_s * const l)
 {
   _list_internals *lin;
@@ -764,25 +935,68 @@ static list_payload_free _list_get_pl_free(list_s * const l)
   lin = _list_get_internals(l);
   if (lin) return lin->list_pl_free;
 
-    // Return RETVAL
   return NULL;
 }
 
-static _list_internals* _list_get_internals(list_s * const l)
+  /*!
+
+     @brief INTERNAL:  Get list internals
+
+     Return pointer to internals structure from a list.
+
+     @param l    pointer to existing list
+
+     @retval "_list_internals *" success
+     @retval NULL    failure
+
+  */
+
+static _list_internals *_list_get_internals(list_s * const l)
 {
     // Sanity check parameters.
   assert(l);
-    // Return RETVAL
+
+    // Return "_list_internals *"
   return l->internals;
 }
+
+  /*!
+
+     @brief INTERNAL:  Get payload data from list object
+
+     Return pointer payload data from list object structure.
+
+     @param lo    pointer to list object
+
+     @retval "void *" success
+     @retval NULL    failure
+
+  */
 
 static void *_list_get_payload(_list_obj *const lo)
 {
     // Sanity check parameters.
   assert(lo);
-    // Return RETVAL
+
+    // Return "void *"
   return lo->_pl;
 }
+
+  /*!
+
+     @brief INTERNAL:  Find a list object by reference
+
+     Find an object in a list.  A match exists when the user supplied
+     "reference" parameter is equal to the address of the list item's
+     payload data.  The list object pointer is returned on a match.
+
+     @param list    pointer to exising list
+     @param reference    pointer to search for in list
+
+     @retval "void *" success
+     @retval NULL    failure
+
+  */
 
 static _list_obj *_list_find_by_reference(list_s * const l, void * const pl)
 {
@@ -803,78 +1017,6 @@ static _list_obj *_list_find_by_reference(list_s * const l, void * const pl)
     lo = lo->n;
   }
 
-    // Return RETVAL
   return NULL;
-}
-
-  /*!
-
-     @brief FUNCTION_BRIEF
-
-     FUNCTION_DETAILS
-
-     @param PARMNAME    PARM_DESCRIPTION
-
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
-
-  */
-
-void list_push(list_s * const list, void * const payload)
-{
-    // Sanity check parameters.
-  assert(list);
-  assert(payload);
-
-  list_insert(list, payload, (void*)HEAD);
-}
-
-  /*!
-
-     @brief FUNCTION_BRIEF
-
-     FUNCTION_DETAILS
-
-     @param PARMNAME    PARM_DESCRIPTION
-
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
-
-  */
-
-void list_queue(list_s * const list, void * const payload)
-{
-    // Sanity check parameters.
-  assert(list);
-  assert(payload);
-
-  list_insert(list, payload, (void*)TAIL);
-}
-
-  /*!
-
-     @brief FUNCTION_BRIEF
-
-     FUNCTION_DETAILS
-
-     @param PARMNAME    PARM_DESCRIPTION
-
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
-
-  */
-
-void *list_dequeue(list_s * const list)
-{
-  void *pl;
-
-    // Sanity check parameters.
-  assert(list);
-
-  pl = list_head(list);
-  list_remove(list, (void*)HEAD);
-
-    // Return RETVAL
-  return pl;
 }
 

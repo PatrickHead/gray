@@ -1,7 +1,7 @@
 /*!
     @file sieve.c
 
-    @brief SOURCE_BRIEF
+    @brief Source file for sieve type filter mode management
 
     @timestamp Wed, 20 Aug 2014 03:18:04 +0000
 
@@ -28,9 +28,17 @@
 
     @file sieve.c
 
-    SOURCE_BRIEF
+    @brief Source file for sieve type filter mode management
 
-    SOURCE_DETAILS
+    A sieve is a special type of STDIO filter mechanism.  A sieve uses the
+    doc-list facility to manage a list of document parts parsed from any STDIO
+    stream, and to mark those of interest to the user.  This module is for
+    managing the mode of the sieve, either passthru, or edit.  While it is
+    entirely up to the user to determine for what the modes will be used, the
+    intent is for edit mode to pick the first "kept" document and make changes
+    to it, then pass it on to the STDIO output stream, while passthru mode is
+    intended to simply pass all incoming document parts on to the output stream,
+    but optionally adding additional data (document parts) to the stream.
 
   */
 
@@ -43,18 +51,18 @@
 
 #include "sieve.h"
 
+  // Module private process mode flag, defaults to "passthru"
 static sieve_process_mode_t _g_process_mode = sieve_process_mode_type_passthru;
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Set current process mode
 
-     FUNCTION_DETAILS
+     Set the current sieve process mode.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param m    desired sieve process mode
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval NONE
 
   */
 
@@ -65,14 +73,11 @@ void sieve_set_process_mode(sieve_process_mode_t m)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Get current process mode
 
-     FUNCTION_DETAILS
+     Get the current sieve process mode.
 
-     @param PARMNAME    PARM_DESCRIPTION
-
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "sieve_process_mode" success
 
   */
 
@@ -84,14 +89,23 @@ sieve_process_mode_t sieve_get_process_mode(void)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert string to sieve process mode
 
-     FUNCTION_DETAILS
+     Convert a string representation of sieve process mode to a
+     sieve_process_mode_t type.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     The following are the valid string representations:
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+       "passthru"
+       "edit"
+
+
+     NOTE:  If the string representation does not match one of the above,
+            sieve_process_mode_type_passthru is returned.
+
+     @param s    string representation of process mode
+
+     @retval "sieve_process_mode_t" success
 
   */
 
@@ -109,14 +123,13 @@ sieve_process_mode_t str2sieve_process_mode_type(char *s)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert sieve process mode to string
 
-     FUNCTION_DETAILS
+     Convert a seive process mode type to a string representation.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param m    sieve process mode to convert
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "char *" success
 
   */
 

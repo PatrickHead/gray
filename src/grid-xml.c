@@ -1,7 +1,7 @@
 /*!
     @file grid-xml.c
 
-    @brief SOURCE_BRIEF
+    @brief Source file for grid XML data management routines
 
     @timestamp Wed, 20 Aug 2014 03:18:04 +0000
 
@@ -28,9 +28,9 @@
 
     @file grid-xml.c
 
-    SOURCE_BRIEF
+    Source file for managing grid data to/from XML format.
 
-    SOURCE_DETAILS
+    XML Utility functions for converting grid data to/from XML format.
 
   */
 
@@ -50,33 +50,20 @@
 
 #include "grid-xml.h"
 
+  // Common constants
+
 #define MAX_SN 40
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert grid data to XML document
 
-     FUNCTION_DETAILS
+     Converts data in grid structure to XML document format.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param g    pointer to grid data structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
-
-  */
-
-//grid_s *grid_sieve(FILE *infile, FILE *outfile);
-
-  /*!
-
-     @brief FUNCTION_BRIEF
-
-     FUNCTION_DETAILS
-
-     @param PARMNAME    PARM_DESCRIPTION
-
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "xmlDocPtr" success
+     @retval NULL    failure
 
   */
 
@@ -95,20 +82,20 @@ xmlDocPtr grid_to_xml_doc(grid_s *g, grid_cell_to_xml_node func)
 
   xmlDocSetRootElement(doc, root);
 
-    // Return RETVAL
+    // Return "xmlDocPtr"
   return doc;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert grid data to XML node
 
-     FUNCTION_DETAILS
+     Converts data in grid structure to XML node format.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param g    pointer to grid data structure
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "xmlNodePtr" success
+     @retval NULL    failure
 
   */
 
@@ -151,20 +138,20 @@ xmlNodePtr grid_to_xml_node(grid_s *g, grid_cell_to_xml_node func)
     }
   }
 
-    // Return RETVAL
+    // Return "xmlNodePtr"
   return node;
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Returns root node of XML document containing grid XML data
 
-     FUNCTION_DETAILS
+     Finds and returns the XML root node of a document containin grid data.
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param doc    pointer to xmlDoc
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "xmlNodePtr" success
+     @retval NULL    failure
 
   */
 
@@ -172,20 +159,20 @@ xmlNodePtr grid_root_node(xmlDocPtr doc)
 {
     // Sanity check parameters.
   assert(doc);
-    // Return RETVAL
+    // Return "xmlNodePtr"
   return xmlDocGetRootElement(doc);
 }
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert XML grid document to grid data structure
 
-     FUNCTION_DETAILS
+     Converts an XML document containing grid data to data structure
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param doc    pointer to xmlDoc
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "grid_s *" success
+     @retval NULL    failure
 
   */
 
@@ -204,14 +191,14 @@ grid_s *grid_from_xml_doc(xmlDocPtr doc, grid_cell_from_xml_node func)
 
   /*!
 
-     @brief FUNCTION_BRIEF
+     @brief Convert XML grid node to grid data structure
 
-     FUNCTION_DETAILS
+     Converts an XML node containing grid data to data structure
 
-     @param PARMNAME    PARM_DESCRIPTION
+     @param node    pointer to xmlNode
 
-     @retval "RETTYPE" success
-     @retval RETVAL    failure
+     @retval "grid_s *" success
+     @retval NULL    failure
 
   */
 
