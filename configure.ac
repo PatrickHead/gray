@@ -38,6 +38,7 @@ AC_CONFIG_FILES([
   tests/Makefile
   doc/Makefile
   doc/reference-manual/Makefile
+  src/libgray.pc
 ])
 
 AC_OUTPUT
