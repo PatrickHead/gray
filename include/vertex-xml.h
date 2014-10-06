@@ -3,7 +3,7 @@
 
     @brief Header file for vertex XML data
 
-    @timestamp Wed, 27 Aug 2014 08:02:26 +0000
+    @timestamp Mon, 06 Oct 2014 13:42:48 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 

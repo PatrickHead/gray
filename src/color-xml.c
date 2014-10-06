@@ -3,7 +3,7 @@
 
     @brief Source file for color XML data management routines
 
-    @timestamp Fri, 05 Sep 2014 09:08:31 +0000
+    @timestamp Mon, 06 Oct 2014 13:42:48 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 

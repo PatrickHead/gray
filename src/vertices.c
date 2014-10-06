@@ -3,7 +3,7 @@
 
     @brief Source file for list of vertices data
 
-    @timestamp Wed, 01 Oct 2014 15:24:09 +0000
+    @timestamp Mon, 06 Oct 2014 13:42:48 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 

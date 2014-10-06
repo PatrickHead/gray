@@ -3,7 +3,7 @@
 
     @brief Header file for splitting and tagging STDIO data stream
 
-    @timestamp Sun, 07 Sep 2014 01:34:04 +0000
+    @timestamp Mon, 06 Oct 2014 13:42:48 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 

@@ -3,7 +3,7 @@
 
     @brief Header file for libxml2 extensions
 
-    @timestamp Wed, 27 Aug 2014 08:06:43 +0000
+    @timestamp Mon, 06 Oct 2014 13:42:48 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
