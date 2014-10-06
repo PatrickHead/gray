@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+echo Pushing to phs1
+git push phs1
+echo Pushing to gluster
+git push gluster

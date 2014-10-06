@@ -1,0 +1,19 @@
+#!/usr/bin/env sh
+
+echo "  Cleaning distribution for uncluttered git tracking."
+make distclean
+
+echo "  Cleaning distribution to absolute prestine state."
+tools/autounfuck
+
+echo "  Committing changes to git repository."
+git commit -a
+
+echo "  Pushing changes to remote repository(ies)"
+tools/push
+
+echo "  Regenerating GNU package."
+tools/autogen
+
+echo "  Configuring GNU package."
+./configure

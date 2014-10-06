@@ -1,0 +1,65 @@
+#!/usr/bin/env sh
+
+usage()
+{
+  echo "Usage: bump <patch|minor|major>"
+}
+
+if [ ! -e configure.ac ]
+then
+  echo "Can not find 'configure.ac'"
+  exit 1
+fi
+
+if [ $# -ne 1 ]
+then
+  usage
+  exit 1
+fi
+
+tmp=`grep AC_INIT configure.ac | sed -e 's/AC_INIT(//' -e 's/) *$//' -e 's/\[//g' -e 's/]//g' -e 's/ *//g'`
+PKGNAME=`echo $tmp | cut -d, -f1`
+PKGVERSION=`echo $tmp | cut -d, -f2`
+PKGAUTHOR=`echo $tmp | cut -d, -f3`
+
+MAJOR=`echo $PKGVERSION | cut -d. -f1`
+MINOR=`echo $PKGVERSION | cut -d. -f2`
+PATCH=`echo $PKGVERSION | cut -d. -f3`
+
+case $1 in
+
+  patch)
+     PATCH=`expr $PATCH + 1`
+     ;;
+
+  minor)
+     MINOR=`expr $MINOR + 1`
+     PATCH=0
+     ;;
+
+  major)
+     MAJOR=`expr $MAJOR + 1`
+     MINOR=0
+     PATCH=0
+     ;;
+
+  *) usage
+     exit 1
+     ;;
+
+esac
+
+PKGVERSION="$MAJOR.$MINOR.$PATCH"
+
+AC_INIT="AC_INIT([$PKGNAME],[$PKGVERSION],[$PKGAUTHOR])"
+
+sed -i -e "s/^[ \t]*AC_INIT(.*)[ \t]*$/$AC_INIT/" configure.ac
+sed -i -e "s/\(^Version:[ \t]*\).*$/\1$PKGVERSION/" misc/egg.spec
+
+commit
+
+if [ -e Makefile ]
+then
+  make
+fi
+

@@ -1,7 +1,7 @@
-EXTRA_DIST = libgray.pc
+EXTRA_DIST = libgray.pc.in
 
-pkgconfiglibdir = $(libdir)/pkgconfig
-pkgconfiglib_DATA = libgray.pc
+pkgconfiglibdir = $(libdir)/pkgconfig 
+pkgconfiglib_DATA = libgray.pc 
 
 AM_CFLAGS = -O3 -I .. -I $(top_srcdir)/include
 AM_LDFLAGS =
