@@ -1,0 +1,5 @@
+*
+!.gitignore
+!doxygen.cfg
+!DoxygenLayout.xml
+!Makefile.am
