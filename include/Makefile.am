@@ -1,1 +1,1 @@
-pkginclude_HEADERS = color.h color-xml.h doc-list.h grid-api.h grid.h grid-size.h grid-xml.h list.h reference.h sieve.h strapp.h vertex.h vertex-xml.h vertices.h vertices-xml.h xml-extensions.h
+pkginclude_HEADERS = callback.h color.h color-xml.h doc-list.h grid-api.h grid.h grid-size.h grid-xml.h input.h list.h mkdir_p.h reference.h sieve.h strapp.h vertex.h vertex-xml.h vertices.h vertices-xml.h xml-extensions.h

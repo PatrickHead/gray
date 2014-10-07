@@ -3,7 +3,7 @@
 
     @brief Header file for grid (matrix/spreadsheet) XML data
 
-    @timestamp Mon, 06 Oct 2014 13:42:48 +0000
+    @timestamp Tue, 07 Oct 2014 04:43:44 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -48,7 +48,7 @@
 #include "grid.h"
 
   /*!
-    brief Prototypes for user defined XML data conversion functions
+    @brief Prototypes for user defined XML data conversion functions
   */
 
 typedef xmlNodePtr (*grid_cell_to_xml_node)(void *payload);

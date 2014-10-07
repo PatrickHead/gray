@@ -3,7 +3,7 @@
 
     @brief Header file for color data
 
-    @timestamp Mon, 06 Oct 2014 13:42:48 +0000
+    @timestamp Tue, 07 Oct 2014 04:43:28 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -47,20 +47,20 @@
 #define COLOR_H
 
   /*!
-    brief Color data structure.
+    @brief Color data structure.
   */
 
 typedef struct
 {
-    /*! brief Unique identifier for color */
+    /*! @brief Unique identifier for color */
   char *tag;
-    /*! brief Red value (0 - 255) */
+    /*! @brief Red value (0 - 255) */
   double r;
-    /*! brief Green value (0 - 255) */
+    /*! @brief Green value (0 - 255) */
   double g;
-    /*! brief Blue value (0 - 255) */
+    /*! @brief Blue value (0 - 255) */
   double b;
-    /*! brief Alpha Channel (transparency) (0.0 - 1.0) */
+    /*! @brief Alpha Channel (transparency) (0.0 - 1.0) */
   double a;
 } color_s;
 

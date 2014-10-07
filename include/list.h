@@ -3,7 +3,7 @@
 
     @brief Header file for list data
 
-    @timestamp Mon, 06 Oct 2014 13:42:48 +0000
+    @timestamp Tue, 07 Oct 2014 04:43:49 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -44,14 +44,14 @@
 #define LIST_H
 
   /*!
-    brief Prototypes for user defined data free/compare functions
+    @brief Prototypes for user defined data free/compare functions
   */
 
 typedef void (*list_payload_free)(void * const payload);
 typedef int (*list_payload_compare)(void * const pl1, void * const pl2);
 
   /*!
-    brief "Whence" type for insert/delete operations
+    @brief "Whence" type for insert/delete operations
   */
 
 typedef enum
@@ -62,12 +62,12 @@ typedef enum
 } list_whence_t;
 
   /*!
-    brief List data structure
+    @brief List data structure
   */
 
 typedef struct
 {
-    /*! brief Pointer to internal data (encapsulates interface) */
+    /*! @brief Pointer to internal data (encapsulates interface) */
   void *internals;
 } list_s;
 

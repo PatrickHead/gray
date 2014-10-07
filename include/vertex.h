@@ -3,7 +3,7 @@
 
     @brief Header file for vertex data
 
-    @timestamp Mon, 06 Oct 2014 13:42:48 +0000
+    @timestamp Tue, 07 Oct 2014 04:43:59 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -41,18 +41,18 @@
 #define VERTEX_H
 
   /*!
-    brief Vertex data structure
+    @brief Vertex data structure
   */
 
 typedef struct
 {
-    /*! brief Unique identifier for vertex */
+    /*! @brief Unique identifier for vertex */
   char *tag;
-    /*! brief X ordinate of vertex */
+    /*! @brief X ordinate of vertex */
   double x;
-    /*! brief Y ordinate of vertex */
+    /*! @brief Y ordinate of vertex */
   double y;
-    /*! brief Z ordinate of vertex */
+    /*! @brief Z ordinate of vertex */
   double z;
 } vertex_s;
 

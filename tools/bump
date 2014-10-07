@@ -54,7 +54,6 @@ PKGVERSION="$MAJOR.$MINOR.$PATCH"
 AC_INIT="AC_INIT([$PKGNAME],[$PKGVERSION],[$PKGAUTHOR])"
 
 sed -i -e "s/^[ \t]*AC_INIT(.*)[ \t]*$/$AC_INIT/" configure.ac
-sed -i -e "s/\(^Version:[ \t]*\).*$/\1$PKGVERSION/" misc/egg.spec
 
 commit
 

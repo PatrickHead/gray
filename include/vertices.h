@@ -3,7 +3,7 @@
 
     @brief Header file for list of vertices data
 
-    @timestamp Mon, 06 Oct 2014 13:42:48 +0000
+    @timestamp Tue, 07 Oct 2014 04:44:03 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -43,12 +43,12 @@
 #include "vertex.h"
 
   /*!
-    brief Vertices data structure
+    @brief Vertices data structure
   */
 
 typedef struct
 {
-    /*! brief Pointer to list of vertices */
+    /*! @brief Pointer to list of vertices */
   list_s *vertices;
 } vertices_s;
 

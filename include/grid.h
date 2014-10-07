@@ -3,7 +3,7 @@
 
     @brief Header file for grid (matrix/spreadsheet) data
 
-    @timestamp Mon, 06 Oct 2014 13:42:48 +0000
+    @timestamp Tue, 07 Oct 2014 04:43:40 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -51,17 +51,17 @@
 #include "vertex.h"
 
   /*!
-    brief Grid data structure
+    @brief Grid data structure
   */
 
 typedef struct
 {
-    /*! brief Pointer to internal information (encapsulates interface) */
+    /*! @brief Pointer to internal information (encapsulates interface) */
   void *_internals;
 } grid_s;
 
   /*!
-    brief Function templates for user defined data compare and free functions
+    @brief Function templates for user defined data compare and free functions
   */
 
 typedef void (*grid_payload_free)(void *payload);

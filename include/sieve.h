@@ -3,7 +3,7 @@
 
     @brief Header file for sieve type filter mode management
 
-    @timestamp Mon, 06 Oct 2014 13:42:48 +0000
+    @timestamp Tue, 07 Oct 2014 04:43:54 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -46,7 +46,7 @@
 #define SIEVE_H
 
   /*!
-    brief Sieve mode type
+    @brief Sieve mode type
   */
 
 typedef enum

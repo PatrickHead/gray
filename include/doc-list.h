@@ -3,7 +3,7 @@
 
     @brief Header file for splitting and tagging STDIO data stream
 
-    @timestamp Mon, 06 Oct 2014 13:42:48 +0000
+    @timestamp Tue, 07 Oct 2014 04:43:34 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -56,22 +56,22 @@
 #include "strapp.h"
 
   /*!
-    brief Document List data structure
+    @brief Document List data structure
   */
 
 typedef struct
 {
-    /*! brief Regular Expression for document matching (splitter) */
+    /*! @brief Regular Expression for document matching (splitter) */
   char *mpat;
-    /*! brief Number of parts in document list */
+    /*! @brief Number of parts in document list */
   int nlist;
-    /*! brief Parts in document list */
+    /*! @brief Parts in document list */
   char **list;
-    /*! brief Regular Expression for marked (keeper) parts */
+    /*! @brief Regular Expression for marked (keeper) parts */
   char *kpat;
-    /*! brief Number of parts in keeper list */
+    /*! @brief Number of parts in keeper list */
   int nkeep;
-    /*! brief Keeper list */
+    /*! @brief Keeper list */
   char **keep;
 } doc_list_s;
 
