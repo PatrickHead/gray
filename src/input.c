@@ -3,7 +3,7 @@
 
     @brief Source code for tracked input source mechanism.
 
-    @timestamp Tue, 07 Oct 2014 04:49:45 +0000
+    @timestamp Tue, 07 Oct 2014 05:03:53 +0000
 
     @author Patrick Head   mailto:patrickhead@gmail.com
 

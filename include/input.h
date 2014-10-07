@@ -3,7 +3,7 @@
 
     @brief Header file for tracked input source.
 
-    @timestamp Tue, 07 Oct 2014 04:48:04 +0000
+    @timestamp Tue, 07 Oct 2014 05:03:53 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 

@@ -3,7 +3,7 @@
 
     @brief Header file for strapp string function
 
-    @timestamp Mon, 06 Oct 2014 14:34:40 +0000
+    @timestamp Tue, 07 Oct 2014 05:03:53 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
