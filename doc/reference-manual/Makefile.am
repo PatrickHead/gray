@@ -11,7 +11,13 @@ latex/refman.tex: $(srcdir)/doxygen.cfg \
 	@if [ ! -e include ];then ln -s $(top_srcdir)/include include; fi
 	@if [ ! -e src ];then ln -s $(top_srcdir)/src src; fi
 	@if [ ! -e doc ];then ln -s $(top_srcdir)/doc doc; fi
-	@if which doxygen; then doxygen $(srcdir)/doxygen.cfg > /dev/null 2>&1; (cd latex; make > /dev/null 2>&1); fi
+	@if which doxygen; \
+   then \
+     doxygen $(srcdir)/doxygen.cfg > /dev/null 2>&1; \
+     sed -i -e 's/latex_count=8/latex_count=20/' latex/Makefile; \
+     cd latex; \
+     make > /dev/null 2>&1; \
+   fi
 	@if [ -L include ];then rm -f include; fi
 	@if [ -L src ];then rm -f src; fi
 	@if [ -L doc ];then rm -f doc; fi
@@ -28,11 +34,11 @@ install-data-local: install-pdf-local install-html-local
 
 install-pdf-local:
 	@mkdir -p $(docdir)
-	@cp latex/refman.pdf $(docdir)/libgray-reference.pdf
+	@cp latex/refman.pdf $(docdir)/libgray.pdf
 
 install-html-local:
 	@mkdir -p $(docdir)
 	@cp -r html $(docdir)
 
 uninstall-local:
-	@rm -rf $(docdir)/libgray-reference.pdf $(docdir)/html
+	@rm -rf $(docdir)/libgray.pdf $(docdir)/html

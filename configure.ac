@@ -6,7 +6,8 @@ AC_INIT([gray],[0.2.0],[pth@patrickhead.net])
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE([-Wall -Werror])
+AM_INIT_AUTOMAKE([-Wall])
+AM_PROG_AR
 LT_INIT
 
 # Checks for programs.

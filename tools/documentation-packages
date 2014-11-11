@@ -1,0 +1,7 @@
+# for debian-ish distributions
+
+doxygen asciidoc latex-beamer latex-xcolor pgf prosper tex-gyre texlive-fonts-recommended-doc texlive-latex-extra-doc texlive-latex-recommended-doc texlive-pictures-doc ps2eps texlive-font-utils texlive-pstricks-doc
+
+# for redhat-ish distributions
+
+<TBD>
