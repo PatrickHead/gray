@@ -3,7 +3,7 @@
 
     @brief Source file for vertex data
 
-    @timestamp Tue, 07 Oct 2014 07:32:14 +0000
+    @timestamp Sat, 27 Dec 2014 10:47:42 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
@@ -64,7 +64,7 @@ vertex_s *vertex_create(void)
   vertex_s *v;
 
   v = (vertex_s *)malloc(sizeof(vertex_s));
-  if (v) return NULL;
+  if (!v) return NULL;
   memset(v, 0, sizeof(vertex_s));
 
     // Default tag
