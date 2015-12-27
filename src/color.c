@@ -3,7 +3,7 @@
 
     @brief Source file for color data management routines
 
-    @timestamp Tue, 07 Oct 2014 07:32:14 +0000
+    @timestamp Sun, 27 Dec 2015 08:13:16 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 

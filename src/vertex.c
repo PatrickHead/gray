@@ -3,7 +3,7 @@
 
     @brief Source file for vertex data
 
-    @timestamp Sat, 27 Dec 2014 10:47:42 +0000
+    @timestamp Fri, 09 Oct 2015 05:37:44 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 

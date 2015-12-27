@@ -3,7 +3,7 @@
 
     @brief Source file for libxml2 extensions
 
-    @timestamp Tue, 07 Oct 2014 07:32:14 +0000
+    @timestamp Fri, 09 Oct 2015 05:37:44 +0000
 
     @author Patrick Head  mailto:patrickhead@gmail.com
 
